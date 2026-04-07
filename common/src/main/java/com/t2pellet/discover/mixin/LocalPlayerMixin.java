@@ -79,7 +79,7 @@ public class LocalPlayerMixin {
         }
 
         // Show title
-        DiscoveredTitle title = DiscoveredTitle.forResourceLocation(DiscoveredTitle.Type.BIOME, location);
+        DiscoveredTitle title = new DiscoveredTitle(DiscoveredTitle.Type.BIOME, location);
         TextRenderManager.INSTANCE.render(title);
         discover$lastTime = time;
     }

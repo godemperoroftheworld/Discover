@@ -14,7 +14,7 @@ public class DiscoverTitlesClient {
         ClientTickEvent.CLIENT_POST.register(TextRenderManager.INSTANCE::tick);
         PlayerEvent.CHANGE_DIMENSION.register((player, oldKey, newKey) -> {
             ResourceLocation location = newKey.location();
-            DiscoveredTitle title = DiscoveredTitle.forResourceLocation(DiscoveredTitle.Type.DIMENSION, location);
+            DiscoveredTitle title = new DiscoveredTitle(DiscoveredTitle.Type.DIMENSION, location);
             TextRenderManager.INSTANCE.render(title);
         });
     }

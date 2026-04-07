@@ -1,17 +1,39 @@
 package com.t2pellet.discover;
 
+import com.t2pellet.discover.util.StringUtil;
+import dev.architectury.platform.Platform;
+import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class DiscoveredTitle {
 
+    public final ResourceLocation location;
+
+    public final Type type;
+    public DiscoveredTitle(Type type, ResourceLocation location) {
+        this.type = type;
+        this.location = location;
+    }
+
+    public String getFriendlyName() {
+        String backupName = StringUtil.getFriendlyPath(this.location);
+        String key = this.type.name + "." + this.location.getNamespace() + "." + this.location.getPath();
+        return Language.getInstance().getOrDefault(key, backupName);
+    }
+
+    public String getFriendlyCredit() {
+        String key = "discover.type." + this.type.name;
+        String localizedType = Language.getInstance().getOrDefault(key, StringUtil.capitalize(this.type.name));
+        String localizedBy = Language.getInstance().getOrDefault("book.byAuthor", "by %1$s");
+        String modName = Platform.isModLoaded(this.location.getNamespace()) ? Platform.getMod(this.location.getNamespace()).getName() : StringUtil.getFriendlyNamespace(this.location);
+        String formattedBy = String.format(localizedBy, modName);
+        return localizedType + " " + formattedBy;
+    }
+
     public enum Type {
-        BIOME("Biome"),
-        STRUCTURE("Structure"),
-        DIMENSION("Dimension");
+        BIOME("biome"),
+        STRUCTURE("structure"),
+        DIMENSION("dimension");
 
         public final String name;
         Type(String name) {
@@ -21,30 +43,5 @@ public class DiscoveredTitle {
         public String toString() {
             return this.name;
         }
-    }
-
-    public static DiscoveredTitle forResourceLocation(Type type, ResourceLocation location) {
-        String string = location.toString();
-        String[] parts = string.split(":");
-        String title = Arrays.stream(parts[1].split("_"))
-                .map(w -> w.substring(0, 1).toUpperCase() + w.substring(1))
-                .collect(Collectors.joining(" "));
-        String credit = parts[0].substring(0, 1).toUpperCase() + parts[0].substring(1);
-
-        return new DiscoveredTitle(type, title, credit);
-    }
-
-    public final Type type;
-    public final String title;
-    @Nullable public final String credit;
-
-    public DiscoveredTitle(Type type, String title) {
-        this(type, title, null);
-    }
-
-    public DiscoveredTitle(Type type, String title, @Nullable String credit) {
-        this.type = type;
-        this.title = title;
-        this.credit = credit;
     }
 }

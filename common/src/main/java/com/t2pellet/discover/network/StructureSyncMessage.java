@@ -36,7 +36,7 @@ public class StructureSyncMessage extends BaseS2CMessage {
     @Override
     public void handle(NetworkManager.PacketContext packetContext) {
         packetContext.queue(() -> {
-            DiscoveredTitle title = DiscoveredTitle.forResourceLocation(DiscoveredTitle.Type.STRUCTURE, this.structure);
+            DiscoveredTitle title = new DiscoveredTitle(DiscoveredTitle.Type.STRUCTURE, this.structure);
             TextRenderManager.INSTANCE.render(title);
         });
     }
