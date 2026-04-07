@@ -1,8 +1,8 @@
 package com.t2pellet.discover.mixin;
 
+import com.t2pellet.discover.DiscoveredTitle;
 import com.t2pellet.discover.client.render.TextRenderManager;
 import com.t2pellet.discover.registry.DiscoverTags;
-import com.t2pellet.discover.DiscoveredTitle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
@@ -33,11 +33,6 @@ public class LocalPlayerMixin {
     @Inject(method = "tick", at = @At("TAIL"))
     public void onTick(CallbackInfo ci) {
         LocalPlayer self = (LocalPlayer)(Object)this;
-
-        // Early return when showing
-        if (TextRenderManager.INSTANCE.isRendering(DiscoveredTitle.Type.STRUCTURE)) {
-            return;
-        }
 
         // Early return when changing / loading dimension
         if (Minecraft.getInstance().level == null || !Minecraft.getInstance().level.isLoaded(self.blockPosition())) {

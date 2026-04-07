@@ -19,8 +19,8 @@ public class TextRenderManager extends DiscoverScheduler implements ClientGuiEve
             .xOffset(-2)
             .yOffset(-2)
             .build();
-    private final TextRenderer DIMENSION = new TextRenderer.Builder().scale(3.0F).yOffset(-62).build();
-    private final TextRenderer BIOME = new TextRenderer.Builder().scale(2.25F).yOffset(-40).build();
+    private final TextRenderer DIMENSION = new TextRenderer.Builder().scale(3.0F).yOffset(-64).build();
+    private final TextRenderer BIOME = new TextRenderer.Builder().scale(2.25F).yOffset(-42).build();
     private final TextRenderer STRUCTURE = new TextRenderer.Builder().scale(1.5F).yOffset(-20).build();
 
     private TextRenderManager() {
@@ -48,14 +48,6 @@ public class TextRenderManager extends DiscoverScheduler implements ClientGuiEve
         return BIOME.isShowing() || STRUCTURE.isShowing() || DIMENSION.isShowing();
     }
 
-    public boolean isRendering(DiscoveredTitle.Type type) {
-        return switch (type) {
-            case STRUCTURE -> STRUCTURE.isShowing();
-            case BIOME -> BIOME.isShowing();
-            case DIMENSION -> DIMENSION.isShowing();
-        };
-    }
-
     public void render(DiscoveredTitle title) {
         switch (title.type) {
             case BIOME -> BIOME.setTitle(title.title);
@@ -67,7 +59,7 @@ public class TextRenderManager extends DiscoverScheduler implements ClientGuiEve
 
     private void renderCredit(DiscoveredTitle title) {
         if (CREDITS.isShowing()) {
-            runInTicks(CREDITS.getShowingTime() + 10, () -> renderCredit(title));
+            runInTicks(CREDITS.getShowingTime(), () -> renderCredit(title));
         } else {
             CREDITS.setTitle(title.type + " by " + title.credit);
         }
