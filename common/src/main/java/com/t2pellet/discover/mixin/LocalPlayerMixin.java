@@ -35,7 +35,7 @@ public class LocalPlayerMixin {
         LocalPlayer self = (LocalPlayer)(Object)this;
 
         // Early return when showing
-        if (TextRenderManager.INSTANCE.isRendering()) {
+        if (TextRenderManager.INSTANCE.isRendering(DiscoveredTitle.Type.STRUCTURE)) {
             return;
         }
 

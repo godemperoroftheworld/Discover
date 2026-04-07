@@ -26,11 +26,12 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
         private int fadeInTicks = 20;
         private int displayTicks = 60;
         private int fadeOutTicks = 20;
+        private int timeOffsetTicks = 0;
         private int xOffset = 0;
         private int yOffset = 0;
         private float scale = 1.0F;
-        private boolean centerText = true;
         private int colour = 0xFFFFFF;
+        private Anchor alignText = Anchor.CENTER;
         private Anchor anchor = Anchor.CENTER;
 
         public Builder fadeInTicks(int fadeInTicks) {
@@ -45,6 +46,11 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
 
         public Builder fadeOutTicks(int fadeOutTicks) {
             this.fadeOutTicks = fadeOutTicks;
+            return this;
+        }
+
+        public Builder timeOffsetTicks(int timeOffsetTicks) {
+            this.timeOffsetTicks = timeOffsetTicks;
             return this;
         }
 
@@ -63,8 +69,8 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
             return this;
         }
 
-        public Builder centerText(boolean centerText) {
-            this.centerText = centerText;
+        public Builder alignText(Anchor alignText) {
+            this.alignText = alignText;
             return this;
         }
 
@@ -79,34 +85,36 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
         }
 
         public TextRenderer build() {
-            return new TextRenderer(fadeInTicks, displayTicks, fadeOutTicks, xOffset, yOffset, scale, centerText, colour, anchor);
+            return new TextRenderer(fadeInTicks, displayTicks, fadeOutTicks, timeOffsetTicks, xOffset, yOffset, scale, colour, alignText, anchor);
         }
     }
 
     public final int fadeInTicks;
     public final int displayTicks;
     public final int fadeOutTicks;
+    public final int timeOffsetTicks;
     public final int totalTicks;
     public final int xOffset;
     public final int yOffset;
     public final float scale;
-    public final boolean centerText;
     public final int colour;
+    public final Anchor textAlign;
     public final Anchor anchor;
 
     private String title;
     private int titleTime;
 
-    public TextRenderer(int fadeInTicks, int displayTicks, int fadeOutTicks, int xOffset, int yOffset, float scale, boolean centerText, int colour, Anchor anchor) {
+    public TextRenderer(int fadeInTicks, int displayTicks, int fadeOutTicks, int timeOffsetTicks, int xOffset, int yOffset, float scale, int colour, Anchor textAlign, Anchor anchor) {
         this.fadeInTicks = fadeInTicks;
         this.displayTicks = displayTicks;
         this.fadeOutTicks = fadeOutTicks;
-        this.totalTicks = fadeInTicks + fadeOutTicks + displayTicks;
+        this.timeOffsetTicks = timeOffsetTicks;
+        this.totalTicks = fadeInTicks + fadeOutTicks + displayTicks + timeOffsetTicks;
         this.xOffset = xOffset;
         this.yOffset = yOffset;
         this.scale = scale;
-        this.centerText = centerText;
         this.colour = colour;
+        this.textAlign = textAlign;
         this.anchor = anchor;
     }
 
@@ -125,6 +133,10 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
         } else if (this.titleTime == 0) {
             this.clearTitle();
         }
+    }
+
+    public int getShowingTime() {
+        return this.titleTime;
     }
 
     public void clearTitle() {
@@ -156,13 +168,27 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
         poseStack.scale(this.scale, this.scale, 0);
         int correctedXOffset = (int) (this.xOffset / scale);
         int correctedYOffset = (int) (this.yOffset / scale);
-        int centerTextXOffset = -1 * (this.centerText ? font.width(this.title) : 0) / 2;
-        int centerTextYOffset = -1 * (this.centerText ? font.lineHeight : 0);
         int colorWithAlpha = this.alphaToColour(alpha, this.colour);
-        graphics.drawString(font, this.title, correctedXOffset + centerTextXOffset, correctedYOffset + centerTextYOffset, colorWithAlpha);
+        graphics.drawString(font, this.title, correctedXOffset + this.getTextOffsetX(), correctedYOffset + this.getTextOffsetY(), colorWithAlpha);
 
         RenderSystem.disableBlend();
         poseStack.popPose();
+    }
+
+    private int getTextOffsetY() {
+        return switch (this.textAlign) {
+            case TOP_CENTER, TOP_LEFT, TOP_RIGHT -> 0;
+            case CENTER, CENTER_LEFT, CENTER_RIGHT -> -1 * Minecraft.getInstance().font.lineHeight / 2;
+            default -> -1 * Minecraft.getInstance().font.lineHeight;
+        };
+    }
+
+    private int getTextOffsetX() {
+        return switch (this.textAlign) {
+            case TOP_LEFT, CENTER_LEFT, BOTTOM_LEFT -> 0;
+            case TOP_CENTER, CENTER, BOTTOM_CENTER -> -1 * Minecraft.getInstance().font.width(this.title) / 2;
+            default -> -1 * Minecraft.getInstance().font.width(this.title);
+        };
     }
 
     private int getAnchorY() {
@@ -182,14 +208,10 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
     }
 
     private int getAlpha(float partialTicks) {
-        return this.getAlpha(partialTicks, 0);
-    }
-
-    private int getAlpha(float partialTicks, int offset) {
         float timeWithPartial = this.titleTime - partialTicks;
         // Shrink the window by offset on both sides
-        float shiftedTime = timeWithPartial - offset;
-        float shiftedTotal = this.totalTicks - offset * 2;
+        float shiftedTime = timeWithPartial - this.timeOffsetTicks;
+        float shiftedTotal = this.totalTicks - this.timeOffsetTicks * 2;
 
         float alpha = 1.0F;
         if (shiftedTime < this.fadeOutTicks) {

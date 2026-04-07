@@ -26,5 +26,6 @@ public class DiscoverScheduler implements ClientTickEvent<Minecraft> {
 
     public void runInTicks(int ticks, Runnable runnable) {
         TickTask task = new TickTask(ticks + currentTick, runnable);
+        queue.add(task);
     }
 }
