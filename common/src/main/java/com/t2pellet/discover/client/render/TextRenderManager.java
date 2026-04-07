@@ -2,58 +2,51 @@ package com.t2pellet.discover.client.render;
 
 import com.t2pellet.discover.DiscoveredTitle;
 import com.t2pellet.discover.client.util.DiscoverScheduler;
+import com.t2pellet.discover.config.DiscoverConfig;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TextRenderManager extends DiscoverScheduler implements ClientGuiEvent.RenderHud {
 
     public static final TextRenderManager INSTANCE = new TextRenderManager();
 
-    private final TextRenderer CREDITS = new TextRenderer.Builder().anchor(TextRenderer.Anchor.BOTTOM_RIGHT)
-            .alignText(TextRenderer.Anchor.BOTTOM_RIGHT)
-            .colour(0xD3D3D3)
-            .timeOffsetTicks(15)
-            .fadeInTicks(10)
-            .displayTicks(50)
-            .xOffset(-2)
-            .yOffset(-2)
-            .build();
-    private final TextRenderer DIMENSION = new TextRenderer.Builder().scale(3.0F).yOffset(-66).build();
-    private final TextRenderer BIOME = new TextRenderer.Builder().scale(2.25F).yOffset(-42).build();
-    private final TextRenderer STRUCTURE = new TextRenderer.Builder().scale(1.5F).yOffset(-18).build();
+    private final Map<DiscoveredTitle.Type, TextRenderer> renderers = new HashMap<>();
+    private final TextRenderer CREDITS = new TextRenderer(DiscoverConfig.INSTANCE.credits);
 
     private TextRenderManager() {
         super();
+        this.renderers.put(DiscoveredTitle.Type.BIOME, new TextRenderer(DiscoverConfig.INSTANCE.biome));
+        this.renderers.put(DiscoveredTitle.Type.DIMENSION, new TextRenderer(DiscoverConfig.INSTANCE.dimension));
+        this.renderers.put(DiscoveredTitle.Type.STRUCTURE, new TextRenderer(DiscoverConfig.INSTANCE.structure));
     }
 
     @Override
     public void tick(Minecraft instance) {
         super.tick(instance);
         CREDITS.tick();
-        DIMENSION.tick();
-        BIOME.tick();
-        STRUCTURE.tick();
+        this.renderers.values().forEach(TextRenderer::tick);
     }
 
     @Override
     public void renderHud(GuiGraphics graphics, float tickDelta) {
         CREDITS.renderHud(graphics, tickDelta);
-        DIMENSION.renderHud(graphics, tickDelta);
-        BIOME.renderHud(graphics, tickDelta);
-        STRUCTURE.renderHud(graphics, tickDelta);
+        this.renderers.values().forEach(renderer -> renderer.renderHud(graphics, tickDelta));
     }
 
     public boolean isRendering() {
-        return BIOME.isShowing() || STRUCTURE.isShowing() || DIMENSION.isShowing();
+        return this.renderers.values().stream().anyMatch(TextRenderer::isShowing);
+    }
+
+    public boolean isRendering(DiscoveredTitle.Type type) {
+        return this.renderers.get(type).isShowing();
     }
 
     public void render(DiscoveredTitle title) {
-        switch (title.type) {
-            case BIOME -> BIOME.setTitle(title.getFriendlyName());
-            case STRUCTURE -> STRUCTURE.setTitle(title.getFriendlyName());
-            case DIMENSION -> DIMENSION.setTitle(title.getFriendlyName());
-        }
+        this.renderers.get(title.type()).setTitle(title.getFriendlyName());
         renderCredit(title);
     }
 

@@ -2,6 +2,7 @@ package com.t2pellet.discover.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.t2pellet.discover.config.TitleConfiguration;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -22,109 +23,19 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
         BOTTOM_RIGHT
     }
 
-    public static class Builder {
-        private int fadeInTicks = 20;
-        private int displayTicks = 60;
-        private int fadeOutTicks = 20;
-        private int timeOffsetTicks = 0;
-        private int xOffset = 0;
-        private int yOffset = 0;
-        private float scale = 1.0F;
-        private int colour = 0xFFFFFF;
-        private Anchor alignText = Anchor.CENTER;
-        private Anchor anchor = Anchor.CENTER;
-
-        public Builder fadeInTicks(int fadeInTicks) {
-            this.fadeInTicks = fadeInTicks;
-            return this;
-        }
-
-        public Builder displayTicks(int displayTicks) {
-            this.displayTicks = displayTicks;
-            return this;
-        }
-
-        public Builder fadeOutTicks(int fadeOutTicks) {
-            this.fadeOutTicks = fadeOutTicks;
-            return this;
-        }
-
-        public Builder timeOffsetTicks(int timeOffsetTicks) {
-            this.timeOffsetTicks = timeOffsetTicks;
-            return this;
-        }
-
-        public Builder xOffset(int xOffset) {
-            this.xOffset = xOffset;
-            return this;
-        }
-
-        public Builder yOffset(int yOffset) {
-            this.yOffset = yOffset;
-            return this;
-        }
-
-        public Builder scale(float scale) {
-            this.scale = scale;
-            return this;
-        }
-
-        public Builder alignText(Anchor alignText) {
-            this.alignText = alignText;
-            return this;
-        }
-
-        public Builder colour(int colour) {
-            this.colour = colour;
-            return this;
-        }
-
-        public Builder anchor(Anchor anchor) {
-            this.anchor = anchor;
-            return this;
-        }
-
-        public TextRenderer build() {
-            return new TextRenderer(fadeInTicks, displayTicks, fadeOutTicks, timeOffsetTicks, xOffset, yOffset, scale, colour, alignText, anchor);
-        }
-    }
-
-    public final int fadeInTicks;
-    public final int displayTicks;
-    public final int fadeOutTicks;
-    public final int timeOffsetTicks;
-    public final int totalTicks;
-    public final int xOffset;
-    public final int yOffset;
-    public final float scale;
-    public final int colour;
-    public final Anchor textAlign;
-    public final Anchor anchor;
-
+    public final TitleConfiguration config;
+    private final int totalTicks;
     private String title;
     private int titleTime;
 
-    public TextRenderer(int fadeInTicks, int displayTicks, int fadeOutTicks, int timeOffsetTicks, int xOffset, int yOffset, float scale, int colour, Anchor textAlign, Anchor anchor) {
-        this.fadeInTicks = fadeInTicks;
-        this.displayTicks = displayTicks;
-        this.fadeOutTicks = fadeOutTicks;
-        this.timeOffsetTicks = timeOffsetTicks;
-        this.totalTicks = fadeInTicks + fadeOutTicks + displayTicks + timeOffsetTicks;
-        this.xOffset = xOffset;
-        this.yOffset = yOffset;
-        this.scale = scale;
-        this.colour = colour;
-        this.textAlign = textAlign;
-        this.anchor = anchor;
+    public TextRenderer(TitleConfiguration config) {
+        this.config = config;
+        this.totalTicks = config.fadeInTicks + config.displayTicks + config.fadeOutTicks;
     }
 
     public void setTitle(String title) {
         this.title = title;
         this.titleTime = this.totalTicks;
-    }
-
-    public boolean isShowing() {
-        return this.title != null;
     }
 
     public void tick() {
@@ -135,13 +46,17 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
         }
     }
 
+    public boolean isShowing() {
+        return this.title != null && this.titleTime > 0;
+    }
+
     public int getShowingTime() {
         return this.titleTime;
     }
 
     public void clearTitle() {
-        this.titleTime = -1;
         this.title = null;
+        this.titleTime = -1;
     }
 
     @Override
@@ -165,10 +80,10 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
 
         // Things
         poseStack.translate(this.getAnchorX(), this.getAnchorY(), 0);
-        poseStack.scale(this.scale, this.scale, 0);
-        int correctedXOffset = (int) (this.xOffset / scale);
-        int correctedYOffset = (int) (this.yOffset / scale);
-        int colorWithAlpha = this.alphaToColour(alpha, this.colour);
+        poseStack.scale(config.scale, config.scale, 0);
+        int correctedXOffset = (int) (config.xOffset / config.scale);
+        int correctedYOffset = (int) (config.yOffset / config.scale);
+        int colorWithAlpha = this.alphaToColour(alpha, config.colour);
         graphics.drawString(font, this.title, correctedXOffset + this.getTextOffsetX(), correctedYOffset + this.getTextOffsetY(), colorWithAlpha);
 
         RenderSystem.disableBlend();
@@ -176,7 +91,7 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
     }
 
     private int getTextOffsetY() {
-        return switch (this.textAlign) {
+        return switch (config.alignText) {
             case TOP_CENTER, TOP_LEFT, TOP_RIGHT -> 0;
             case CENTER, CENTER_LEFT, CENTER_RIGHT -> -1 * Minecraft.getInstance().font.lineHeight / 2;
             default -> -1 * Minecraft.getInstance().font.lineHeight;
@@ -184,7 +99,7 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
     }
 
     private int getTextOffsetX() {
-        return switch (this.textAlign) {
+        return switch (config.alignText) {
             case TOP_LEFT, CENTER_LEFT, BOTTOM_LEFT -> 0;
             case TOP_CENTER, CENTER, BOTTOM_CENTER -> -1 * Minecraft.getInstance().font.width(this.title) / 2;
             default -> -1 * Minecraft.getInstance().font.width(this.title);
@@ -192,7 +107,7 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
     }
 
     private int getAnchorY() {
-        return switch (this.anchor) {
+        return switch (config.anchor) {
             case TOP_CENTER, TOP_LEFT, TOP_RIGHT -> 0;
             case CENTER, CENTER_LEFT, CENTER_RIGHT -> Minecraft.getInstance().getWindow().getGuiScaledHeight() / 2;
             default -> Minecraft.getInstance().getWindow().getGuiScaledHeight();
@@ -200,7 +115,7 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
     }
 
     private int getAnchorX() {
-        return switch (this.anchor) {
+        return switch (config.anchor) {
             case TOP_LEFT, CENTER_LEFT, BOTTOM_LEFT -> 0;
             case TOP_CENTER, CENTER, BOTTOM_CENTER -> Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2;
             default -> Minecraft.getInstance().getWindow().getGuiScaledWidth();
@@ -210,15 +125,15 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
     private int getAlpha(float partialTicks) {
         float timeWithPartial = this.titleTime - partialTicks;
         // Shrink the window by offset on both sides
-        float shiftedTime = timeWithPartial - this.timeOffsetTicks;
-        float shiftedTotal = this.totalTicks - this.timeOffsetTicks * 2;
+        float shiftedTime = timeWithPartial - config.timeOffsetTicks;
+        float shiftedTotal = this.totalTicks - config.timeOffsetTicks * 2;
 
         float alpha = 1.0F;
-        if (shiftedTime < this.fadeOutTicks) {
-            alpha = shiftedTime / this.fadeOutTicks;
-        } else if (shiftedTime > shiftedTotal - this.fadeInTicks) {
-            float timeForFade = shiftedTime - (shiftedTotal - this.fadeInTicks);
-            alpha = 1.0F - timeForFade / this.fadeInTicks;
+        if (shiftedTime < config.fadeOutTicks) {
+            alpha = shiftedTime / config.fadeOutTicks;
+        } else if (shiftedTime > shiftedTotal - config.fadeInTicks) {
+            float timeForFade = shiftedTime - (shiftedTotal - config.fadeInTicks);
+            alpha = 1.0F - timeForFade / config.fadeInTicks;
         }
         return Mth.clamp(Math.round(255 * alpha), 0, 255);
     }

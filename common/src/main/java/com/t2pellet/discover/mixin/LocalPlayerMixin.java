@@ -9,7 +9,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.SectionPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -65,10 +64,9 @@ public class LocalPlayerMixin {
         // Special handling when underground, only consider cave biomes
         boolean dimensionHasCeiling = Minecraft.getInstance().level.dimensionType().hasCeiling();
         boolean isSkyObstructed = !Minecraft.getInstance().level.canSeeSkyFromBelowWater(self.blockPosition());
-        boolean hasSkyLight = Minecraft.getInstance().level.getBrightness(LightLayer.SKY, self.blockPosition()) > 0;
         // My hacky attempt at figuring out what's a cave biome
         boolean isCaveBiome = biome.is(DiscoverTags.IS_CAVE);
-        if (!dimensionHasCeiling && isSkyObstructed && !hasSkyLight && !isCaveBiome) {
+        if (!dimensionHasCeiling && isSkyObstructed && !isCaveBiome) {
             return;
         }
 

@@ -5,15 +5,7 @@ import dev.architectury.platform.Platform;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
 
-public class DiscoveredTitle {
-
-    public final ResourceLocation location;
-
-    public final Type type;
-    public DiscoveredTitle(Type type, ResourceLocation location) {
-        this.type = type;
-        this.location = location;
-    }
+public record DiscoveredTitle(Type type, ResourceLocation location) {
 
     public String getFriendlyName() {
         String backupName = StringUtil.getFriendlyPath(this.location);
@@ -36,6 +28,7 @@ public class DiscoveredTitle {
         DIMENSION("dimension");
 
         public final String name;
+
         Type(String name) {
             this.name = name;
         }
