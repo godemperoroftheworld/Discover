@@ -34,6 +34,10 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
         resetColour();
     }
 
+    public boolean isEnabled() {
+        return config.enabled.get();
+    }
+
     public void setColour(int colour) {
         this.titleColour = colour & 0xFFFFFF;
     }

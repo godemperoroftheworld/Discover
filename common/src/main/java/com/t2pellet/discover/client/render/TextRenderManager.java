@@ -49,9 +49,10 @@ public class TextRenderManager extends DiscoverScheduler implements ClientGuiEve
     public void render(DiscoveredTitle title) {
         if (DiscoverLog.INSTANCE.hasVisited(title.location())) return;
 
-        Integer colour = title.getColour();
         TextRenderer renderer = this.renderers.get(title.type());
-        if (!renderer.isShowing()) {
+
+        if (renderer.isEnabled() && !renderer.isShowing()) {
+            Integer colour = title.getColour();
             if (colour != null) renderer.setColour(colour);
             else renderer.resetColour();
             renderer.setTitle(title.getFriendlyName());
@@ -61,6 +62,7 @@ public class TextRenderManager extends DiscoverScheduler implements ClientGuiEve
     }
 
     private void renderCredit(DiscoveredTitle title) {
+        if (!CREDITS.isEnabled()) return;
         if (CREDITS.isShowing()) {
             runInTicks(CREDITS.getShowingTime(), () -> renderCredit(title));
         } else {

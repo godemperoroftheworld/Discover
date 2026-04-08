@@ -2,11 +2,13 @@ package com.t2pellet.discover.config;
 
 import com.t2pellet.discover.client.render.TextRenderer;
 import me.fzzyhmstrs.fzzy_config.util.Walkable;
+import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedBoolean;
 import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedColor;
 
 import java.awt.*;
 
 public class TitleConfiguration implements Walkable {
+    public ValidatedBoolean enabled;
     public int fadeInTicks;
     public int displayTicks;
     public int fadeOutTicks;
@@ -18,7 +20,8 @@ public class TitleConfiguration implements Walkable {
     public TextRenderer.Anchor alignText;
     public TextRenderer.Anchor anchor;
 
-    public TitleConfiguration(int fadeInTicks, int displayTicks, int fadeOutTicks, int timeOffsetTicks, int xOffset, int yOffset, float scale, int colour, TextRenderer.Anchor alignText, TextRenderer.Anchor anchor) {
+    public TitleConfiguration(ValidatedBoolean enabled, int fadeInTicks, int displayTicks, int fadeOutTicks, int timeOffsetTicks, int xOffset, int yOffset, float scale, int colour, TextRenderer.Anchor alignText, TextRenderer.Anchor anchor) {
+        this.enabled = enabled;
         this.fadeInTicks = fadeInTicks;
         this.displayTicks = displayTicks;
         this.fadeOutTicks = fadeOutTicks;
@@ -32,6 +35,7 @@ public class TitleConfiguration implements Walkable {
     }
 
     public static class Builder {
+        public ValidatedBoolean enabled = new ValidatedBoolean(true);
         public int fadeInTicks = 20;
         public int displayTicks = 60;
         public int fadeOutTicks = 20;
@@ -95,7 +99,7 @@ public class TitleConfiguration implements Walkable {
 
         public TitleConfiguration build() {
             return new TitleConfiguration(
-                    fadeInTicks, displayTicks, fadeOutTicks, timeOffsetTicks, xOffset, yOffset, scale, colour, alignText, anchor
+                    enabled, fadeInTicks, displayTicks, fadeOutTicks, timeOffsetTicks, xOffset, yOffset, scale, colour, alignText, anchor
             );
         }
     }
