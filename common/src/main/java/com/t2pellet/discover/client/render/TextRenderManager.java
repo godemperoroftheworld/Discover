@@ -50,6 +50,7 @@ public class TextRenderManager extends DiscoverScheduler implements ClientGuiEve
         if (DiscoverLog.INSTANCE.hasVisited(title.location())) return;
 
         TextRenderer renderer = this.renderers.get(title.type());
+        if (renderer.config.blacklist.contains(title.location())) return;
 
         if (renderer.isEnabled() && !renderer.isShowing()) {
             Integer colour = title.getColour();

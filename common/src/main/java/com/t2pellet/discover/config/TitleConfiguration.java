@@ -2,10 +2,15 @@ package com.t2pellet.discover.config;
 
 import com.t2pellet.discover.client.render.TextRenderer;
 import me.fzzyhmstrs.fzzy_config.util.Walkable;
+import me.fzzyhmstrs.fzzy_config.validation.collection.ValidatedSet;
+import me.fzzyhmstrs.fzzy_config.validation.minecraft.ValidatedIdentifier;
 import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedBoolean;
 import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedColor;
+import net.minecraft.resources.ResourceLocation;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TitleConfiguration implements Walkable {
     public ValidatedBoolean enabled;
@@ -20,8 +25,9 @@ public class TitleConfiguration implements Walkable {
     public TextRenderer.Anchor alignText;
     public TextRenderer.Anchor anchor;
     public ValidatedBoolean shadow;
+    public ValidatedSet<ResourceLocation> blacklist;
 
-    public TitleConfiguration(ValidatedBoolean enabled, int fadeInTicks, int displayTicks, int fadeOutTicks, int timeOffsetTicks, int xOffset, int yOffset, float scale, int colour, TextRenderer.Anchor alignText, TextRenderer.Anchor anchor, ValidatedBoolean shadow) {
+    public TitleConfiguration(ValidatedBoolean enabled, int fadeInTicks, int displayTicks, int fadeOutTicks, int timeOffsetTicks, int xOffset, int yOffset, float scale, int colour, TextRenderer.Anchor alignText, TextRenderer.Anchor anchor, ValidatedBoolean shadow, ValidatedSet<ResourceLocation> blacklist) {
         this.enabled = enabled;
         this.fadeInTicks = fadeInTicks;
         this.displayTicks = displayTicks;
@@ -34,10 +40,11 @@ public class TitleConfiguration implements Walkable {
         this.alignText = alignText;
         this.anchor = anchor;
         this.shadow = shadow;
+        this.blacklist = blacklist;
     }
 
     public static class Builder {
-        public ValidatedBoolean enabled = new ValidatedBoolean(true);
+        public boolean enabled = true;
         public int fadeInTicks = 20;
         public int displayTicks = 60;
         public int fadeOutTicks = 20;
@@ -48,7 +55,8 @@ public class TitleConfiguration implements Walkable {
         public int colour = 0xFFFFFF;
         public TextRenderer.Anchor alignText = TextRenderer.Anchor.CENTER;
         public TextRenderer.Anchor anchor = TextRenderer.Anchor.CENTER;
-        public ValidatedBoolean shadow = new ValidatedBoolean(true);
+        public boolean shadow = true;
+        public List<ResourceLocation> blacklist = new ArrayList<>();
 
         public Builder fadeInTicks(int fadeInTicks) {
             this.fadeInTicks = fadeInTicks;
@@ -101,13 +109,18 @@ public class TitleConfiguration implements Walkable {
         }
 
         public Builder shadow(boolean shadow) {
-            this.shadow = new ValidatedBoolean(shadow);
+            this.shadow = true;
+            return this;
+        }
+
+        public Builder blacklist(ResourceLocation... blacklist) {
+            this.blacklist = List.of(blacklist);
             return this;
         }
 
         public TitleConfiguration build() {
             return new TitleConfiguration(
-                    enabled, fadeInTicks, displayTicks, fadeOutTicks, timeOffsetTicks, xOffset, yOffset, scale, colour, alignText, anchor, shadow
+                    new ValidatedBoolean(enabled), fadeInTicks, displayTicks, fadeOutTicks, timeOffsetTicks, xOffset, yOffset, scale, colour, alignText, anchor, new ValidatedBoolean(shadow), new ValidatedIdentifier().toSet(blacklist)
             );
         }
     }
