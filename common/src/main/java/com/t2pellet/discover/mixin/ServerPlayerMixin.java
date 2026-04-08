@@ -21,11 +21,6 @@ import java.util.Optional;
 @Mixin(ServerPlayer.class)
 public class ServerPlayerMixin {
     @Unique
-    private static final int COOLDOWN_TICKS = 80;
-
-    @Unique
-    private long discover$lastTime = 0;
-    @Unique
     private Structure discover$lastStructure = null;
 
     @Inject(method = "setLastSectionPos", at = @At("HEAD"))
@@ -46,13 +41,6 @@ public class ServerPlayerMixin {
         }
         StructureStart currentStructure = found.get();
 
-        // Early return cooldown check
-        long time = self.serverLevel().getGameTime();
-        long diff = Math.abs(time - discover$lastTime);
-        if (diff < COOLDOWN_TICKS) {
-            return;
-        }
-
         // Early return if in same structure
         if (currentStructure.getStructure().equals(discover$lastStructure)) {
             return;
@@ -66,7 +54,6 @@ public class ServerPlayerMixin {
 
         // Show title
         new StructureSyncMessage(self.serverLevel(), currentStructure.getStructure()).sendTo(self);
-        discover$lastTime = time;
         discover$lastStructure = currentStructure.getStructure();
     }
 

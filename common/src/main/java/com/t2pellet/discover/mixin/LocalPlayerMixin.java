@@ -19,11 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LocalPlayer.class)
 public class LocalPlayerMixin {
     @Unique
-    private static final int COOLDOWN_TICKS = 160;
-
-    @Unique
-    private long discover$lastTime = 0;
-    @Unique
     private Biome discover$lastBiome = null;
     @Unique
     private SectionPos discover$lastSection = null;
@@ -46,19 +41,10 @@ public class LocalPlayerMixin {
             discover$lastSection = currentSection;
         }
 
-        // Early return cooldown check
-        long time = Minecraft.getInstance().level.getGameTime();
-        long diff = Math.abs(time - discover$lastTime);
-        if (diff < COOLDOWN_TICKS) {
-            return;
-        }
-
         // Get the current biome, early return if the same
         Holder<Biome> biome = Minecraft.getInstance().level.getBiome(self.blockPosition());
         if (biome.value().equals(discover$lastBiome)) {
             return;
-        } else {
-            discover$lastBiome = biome.value();
         }
 
         // Special handling when underground, only consider cave biomes
@@ -70,6 +56,9 @@ public class LocalPlayerMixin {
             return;
         }
 
+        // Update last biome
+        discover$lastBiome = biome.value();
+
         // Get ResourceLocation
         ResourceLocation location = biome.unwrapKey().map(ResourceKey::location).orElse(null);
         if (location == null) {
@@ -79,6 +68,5 @@ public class LocalPlayerMixin {
         // Show title
         DiscoveredTitle title = new DiscoveredTitle(DiscoveredTitle.Type.BIOME, location);
         TextRenderManager.INSTANCE.render(title);
-        discover$lastTime = time;
     }
 }
