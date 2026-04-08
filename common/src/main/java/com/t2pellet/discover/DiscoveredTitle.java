@@ -2,10 +2,13 @@ package com.t2pellet.discover;
 
 import com.t2pellet.discover.util.StringUtil;
 import dev.architectury.platform.Platform;
+import net.minecraft.Util;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
 
 public record DiscoveredTitle(Type type, ResourceLocation location) {
+
+    private static final String TRAVELER_TITLE_COMPAT_ID = "travelerstitles";
 
     public Integer getColour() {
         String key = this.type.name + "." + this.location.getNamespace() + "." + this.location.getPath() + ".color";
@@ -21,8 +24,22 @@ public record DiscoveredTitle(Type type, ResourceLocation location) {
     }
 
     public String getFriendlyName() {
+        // Try first with override of format `discover.${type}.${namespace}.${path}`
+        String prefix = DiscoverTitles.MOD_ID + "." + this.type.name;
+        String key = Util.makeDescriptionId(prefix, this.location);
+        if (Language.getInstance().has(key)) {
+            return Language.getInstance().getOrDefault(key);
+        }
+        // Then try with compat format `travelerstitles.${type}.${namespace}.${path}`
+        String compatPrefix = this.type == Type.DIMENSION ? TRAVELER_TITLE_COMPAT_ID : TRAVELER_TITLE_COMPAT_ID + "." + this.type.name;
+        String compatKey = Util.makeDescriptionId(compatPrefix, this.location);
+        return Language.getInstance().getOrDefault(compatKey, this.getLocaleName());
+    }
+
+    private String getLocaleName() {
+        // Used when overrides are not present, the default description ID, falling back to a friendl-i-fied version of the ResourecLocation
         String backupName = StringUtil.getFriendlyPath(this.location);
-        String key = this.type.name + "." + this.location.getNamespace() + "." + this.location.getPath();
+        String key = Util.makeDescriptionId(this.type.name, this.location);
         return Language.getInstance().getOrDefault(key, backupName);
     }
 

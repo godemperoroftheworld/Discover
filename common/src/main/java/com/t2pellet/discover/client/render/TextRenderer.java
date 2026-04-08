@@ -97,7 +97,7 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
         int correctedXOffset = (int) (config.xOffset / config.scale);
         int correctedYOffset = (int) (config.yOffset / config.scale);
         int colorWithAlpha = this.alphaToColour(alpha, this.titleColour);
-        graphics.drawString(font, this.title, correctedXOffset + this.getTextOffsetX(), correctedYOffset + this.getTextOffsetY(), colorWithAlpha);
+        graphics.drawString(font, this.title, correctedXOffset + this.getTextOffsetX(), correctedYOffset + this.getTextOffsetY(), colorWithAlpha, config.shadow.get());
 
         RenderSystem.disableBlend();
         poseStack.popPose();

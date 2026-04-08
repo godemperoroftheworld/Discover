@@ -19,8 +19,9 @@ public class TitleConfiguration implements Walkable {
     public ValidatedColor colour;
     public TextRenderer.Anchor alignText;
     public TextRenderer.Anchor anchor;
+    public ValidatedBoolean shadow;
 
-    public TitleConfiguration(ValidatedBoolean enabled, int fadeInTicks, int displayTicks, int fadeOutTicks, int timeOffsetTicks, int xOffset, int yOffset, float scale, int colour, TextRenderer.Anchor alignText, TextRenderer.Anchor anchor) {
+    public TitleConfiguration(ValidatedBoolean enabled, int fadeInTicks, int displayTicks, int fadeOutTicks, int timeOffsetTicks, int xOffset, int yOffset, float scale, int colour, TextRenderer.Anchor alignText, TextRenderer.Anchor anchor, ValidatedBoolean shadow) {
         this.enabled = enabled;
         this.fadeInTicks = fadeInTicks;
         this.displayTicks = displayTicks;
@@ -32,6 +33,7 @@ public class TitleConfiguration implements Walkable {
         this.colour = new ValidatedColor(new Color(colour));
         this.alignText = alignText;
         this.anchor = anchor;
+        this.shadow = shadow;
     }
 
     public static class Builder {
@@ -46,6 +48,7 @@ public class TitleConfiguration implements Walkable {
         public int colour = 0xFFFFFF;
         public TextRenderer.Anchor alignText = TextRenderer.Anchor.CENTER;
         public TextRenderer.Anchor anchor = TextRenderer.Anchor.CENTER;
+        public ValidatedBoolean shadow = new ValidatedBoolean(true);
 
         public Builder fadeInTicks(int fadeInTicks) {
             this.fadeInTicks = fadeInTicks;
@@ -97,9 +100,14 @@ public class TitleConfiguration implements Walkable {
             return this;
         }
 
+        public Builder shadow(boolean shadow) {
+            this.shadow = new ValidatedBoolean(shadow);
+            return this;
+        }
+
         public TitleConfiguration build() {
             return new TitleConfiguration(
-                    enabled, fadeInTicks, displayTicks, fadeOutTicks, timeOffsetTicks, xOffset, yOffset, scale, colour, alignText, anchor
+                    enabled, fadeInTicks, displayTicks, fadeOutTicks, timeOffsetTicks, xOffset, yOffset, scale, colour, alignText, anchor, shadow
             );
         }
     }

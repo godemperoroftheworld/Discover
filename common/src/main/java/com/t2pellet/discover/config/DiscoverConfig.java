@@ -32,6 +32,7 @@ public class DiscoverConfig extends Config {
             .displayTicks(50)
             .xOffset(-2)
             .yOffset(-2)
+            .shadow(false)
             .build();
 
 
