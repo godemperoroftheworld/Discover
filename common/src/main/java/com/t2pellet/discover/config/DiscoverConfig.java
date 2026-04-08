@@ -4,14 +4,21 @@ import com.t2pellet.discover.DiscoverTitles;
 import com.t2pellet.discover.client.render.TextRenderer;
 import me.fzzyhmstrs.fzzy_config.api.ConfigApiJava;
 import me.fzzyhmstrs.fzzy_config.config.Config;
-import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedBoolean;
+import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedEnum;
+import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedInt;
 import net.minecraft.resources.ResourceLocation;
 
 public class DiscoverConfig extends Config {
 
-    public static final DiscoverConfig INSTANCE = ConfigApiJava.registerAndLoadConfig(DiscoverConfig::new);
+    public ValidatedEnum<Mode> mode = new ValidatedEnum<>(Mode.ONCE_PER_SESSION);
 
-    public ValidatedBoolean showOnlyOnce = new ValidatedBoolean(true);
+    public static final DiscoverConfig INSTANCE = ConfigApiJava.registerAndLoadConfig(DiscoverConfig::new);
+    public ValidatedInt cooldownTicks = new ValidatedInt(100);
+    public enum Mode {
+        ONCE_PER_SESSION,
+        ONCE_PER_WORLD,
+        ALWAYS,
+    }
 
     public TitleConfiguration dimension = new TitleConfiguration.Builder().scale(3.0F).yOffset(-66).build();
     public TitleConfiguration biome = new TitleConfiguration.Builder().scale(2.25F).yOffset(-42).build();

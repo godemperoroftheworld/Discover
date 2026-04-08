@@ -2,6 +2,7 @@ package com.t2pellet.discover.mixin;
 
 import com.t2pellet.discover.DiscoveredTitle;
 import com.t2pellet.discover.client.render.TextRenderManager;
+import com.t2pellet.discover.config.DiscoverConfig;
 import com.t2pellet.discover.registry.DiscoverTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -18,6 +19,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LocalPlayer.class)
 public class LocalPlayerMixin {
+
+    @Unique
+    private long discover$lastTime = 0;
     @Unique
     private Biome discover$lastBiome = null;
     @Unique
@@ -39,6 +43,13 @@ public class LocalPlayerMixin {
             return;
         } else {
             discover$lastSection = currentSection;
+        }
+
+        // Early return cooldown check
+        long time = Minecraft.getInstance().level.getGameTime();
+        long diff = Math.abs(time - discover$lastTime);
+        if (diff < DiscoverConfig.INSTANCE.cooldownTicks.get()) {
+            return;
         }
 
         // Get the current biome, early return if the same
@@ -68,5 +79,6 @@ public class LocalPlayerMixin {
         // Show title
         DiscoveredTitle title = new DiscoveredTitle(DiscoveredTitle.Type.BIOME, location);
         TextRenderManager.INSTANCE.render(title);
+        discover$lastTime = time;
     }
 }

@@ -1,6 +1,7 @@
 package com.t2pellet.discover.client.render;
 
 import com.t2pellet.discover.DiscoveredTitle;
+import com.t2pellet.discover.client.util.DiscoverLog;
 import com.t2pellet.discover.client.util.DiscoverScheduler;
 import com.t2pellet.discover.config.DiscoverConfig;
 import dev.architectury.event.events.client.ClientGuiEvent;
@@ -46,16 +47,17 @@ public class TextRenderManager extends DiscoverScheduler implements ClientGuiEve
     }
 
     public void render(DiscoveredTitle title) {
+        if (DiscoverLog.INSTANCE.hasVisited(title.location())) return;
+
         Integer colour = title.getColour();
         TextRenderer renderer = this.renderers.get(title.type());
-        if (renderer.isShowing()) {
-            runInTicks(renderer.getShowingTime(), () -> render(title));
-        } else {
+        if (!renderer.isShowing()) {
             if (colour != null) renderer.setColour(colour);
             else renderer.resetColour();
             renderer.setTitle(title.getFriendlyName());
+            renderCredit(title);
+            DiscoverLog.INSTANCE.add(title.location());
         }
-        renderCredit(title);
     }
 
     private void renderCredit(DiscoveredTitle title) {
