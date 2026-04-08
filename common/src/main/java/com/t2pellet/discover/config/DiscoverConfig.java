@@ -4,11 +4,15 @@ import com.t2pellet.discover.DiscoverTitles;
 import com.t2pellet.discover.client.render.TextRenderer;
 import me.fzzyhmstrs.fzzy_config.api.ConfigApiJava;
 import me.fzzyhmstrs.fzzy_config.config.Config;
+import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedBoolean;
 import net.minecraft.resources.ResourceLocation;
 
 public class DiscoverConfig extends Config {
 
     public static final DiscoverConfig INSTANCE = ConfigApiJava.registerAndLoadConfig(DiscoverConfig::new);
+
+    public ValidatedBoolean showOnlyOnce = new ValidatedBoolean(true);
+
     public TitleConfiguration dimension = new TitleConfiguration.Builder().scale(3.0F).yOffset(-66).build();
     public TitleConfiguration biome = new TitleConfiguration.Builder().scale(2.25F).yOffset(-42).build();
     public TitleConfiguration structure = new TitleConfiguration.Builder().scale(1.5F).yOffset(-18).build();
@@ -22,6 +26,8 @@ public class DiscoverConfig extends Config {
             .xOffset(-2)
             .yOffset(-2)
             .build();
+
+
     public DiscoverConfig() {
         super(new ResourceLocation(DiscoverTitles.MOD_ID, "config"));
     }
