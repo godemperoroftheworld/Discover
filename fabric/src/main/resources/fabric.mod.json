@@ -3,9 +3,9 @@
   "id": "discover",
   "version": "${version}",
   "name": "Discover",
-  "description": "",
+  "description": "Adds some cute titles when you enter a biome / dimension / structure !",
   "authors": [
-    ""
+    "Tenzin <3"
   ],
   "contact": {
     "homepage": ""

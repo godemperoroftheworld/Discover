@@ -30,10 +30,17 @@ subprojects {
         // See https://docs.gradle.org/current/userguide/declaring_repositories.html
         // for more information about repositories.
         maven {
-            name = "Modrinth"
-            url = "https://api.modrinth.com/maven"
-            content {
-                includeGroup "maven.modrinth"
+            name = "FzzyMaven"
+            url = uri("https://maven.fzzyhmstrs.me/")
+        }
+        maven {
+            name = 'Kotlin for Forge'
+            url = 'https://thedarkcolour.github.io/KotlinForForge/'
+        }
+        repositories {
+            maven {
+                name = 'TerraformersMC'
+                url = 'https://maven.terraformersmc.com/'
             }
         }
     }

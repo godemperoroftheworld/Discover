@@ -10,6 +10,5 @@ dependencies {
 
     modImplementation "dev.architectury:architectury:$rootProject.architectury_api_version"
 
-    modRuntimeOnly "blue.endless:jankson:1.2.3"
-    modApi "maven.modrinth:fzzy-config:${project.fzzy_config_version}"
+    compileOnly group: 'me.fzzyhmstrs', name: 'fzzy_config', version: "${fuzzy_config_forge_version}"
 }
