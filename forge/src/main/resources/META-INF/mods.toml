@@ -7,9 +7,9 @@ license = "GNU AGPL 3.0"
 modId = "discover"
 version = "${version}"
 displayName = "Discover Titles"
-authors = ""
+authors = "Tenzin <3"
 description = '''
-
+Adds some cute titles when you enter a biome / dimension / structure !
 '''
 #logoFile = ""
 
@@ -31,5 +31,12 @@ side = "BOTH"
 modId = "architectury"
 mandatory = true
 versionRange = "[9.2.14,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.discover]]
+modId = "fzzy_config"
+mandatory = true
+versionRange = "*"
 ordering = "AFTER"
 side = "BOTH"
