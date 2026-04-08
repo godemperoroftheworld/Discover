@@ -9,7 +9,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 
-
 public class TextRenderer implements ClientGuiEvent.RenderHud {
     public enum Anchor {
         TOP_LEFT,
@@ -27,10 +26,20 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
     private final int totalTicks;
     private String title;
     private int titleTime;
+    private int titleColour;
 
     public TextRenderer(TitleConfiguration config) {
         this.config = config;
         this.totalTicks = config.fadeInTicks + config.displayTicks + config.fadeOutTicks;
+        resetColour();
+    }
+
+    public void setColour(int colour) {
+        this.titleColour = colour & 0xFFFFFF;
+    }
+
+    public void resetColour() {
+        setColour(config.colour.toInt());
     }
 
     public void setTitle(String title) {
@@ -83,7 +92,7 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
         poseStack.scale(config.scale, config.scale, 0);
         int correctedXOffset = (int) (config.xOffset / config.scale);
         int correctedYOffset = (int) (config.yOffset / config.scale);
-        int colorWithAlpha = this.alphaToColour(alpha, config.colour);
+        int colorWithAlpha = this.alphaToColour(alpha, this.titleColour);
         graphics.drawString(font, this.title, correctedXOffset + this.getTextOffsetX(), correctedYOffset + this.getTextOffsetY(), colorWithAlpha);
 
         RenderSystem.disableBlend();

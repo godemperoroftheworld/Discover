@@ -7,6 +7,19 @@ import net.minecraft.resources.ResourceLocation;
 
 public record DiscoveredTitle(Type type, ResourceLocation location) {
 
+    public Integer getColour() {
+        String key = this.type.name + "." + this.location.getNamespace() + "." + this.location.getPath() + ".color";
+        if (Language.getInstance().has(key)) {
+            String colorString = Language.getInstance().getOrDefault(key);
+            try {
+                return Integer.parseInt(colorString, 16);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
     public String getFriendlyName() {
         String backupName = StringUtil.getFriendlyPath(this.location);
         String key = this.type.name + "." + this.location.getNamespace() + "." + this.location.getPath();

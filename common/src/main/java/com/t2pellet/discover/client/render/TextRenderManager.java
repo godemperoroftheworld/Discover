@@ -46,7 +46,15 @@ public class TextRenderManager extends DiscoverScheduler implements ClientGuiEve
     }
 
     public void render(DiscoveredTitle title) {
-        this.renderers.get(title.type()).setTitle(title.getFriendlyName());
+        Integer colour = title.getColour();
+        TextRenderer renderer = this.renderers.get(title.type());
+        if (renderer.isShowing()) {
+            runInTicks(renderer.getShowingTime(), () -> render(title));
+        } else {
+            if (colour != null) renderer.setColour(colour);
+            else renderer.resetColour();
+            renderer.setTitle(title.getFriendlyName());
+        }
         renderCredit(title);
     }
 

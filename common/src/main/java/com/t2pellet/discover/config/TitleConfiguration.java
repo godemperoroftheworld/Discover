@@ -2,6 +2,9 @@ package com.t2pellet.discover.config;
 
 import com.t2pellet.discover.client.render.TextRenderer;
 import me.fzzyhmstrs.fzzy_config.util.Walkable;
+import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedColor;
+
+import java.awt.*;
 
 public class TitleConfiguration implements Walkable {
     public int fadeInTicks;
@@ -11,7 +14,7 @@ public class TitleConfiguration implements Walkable {
     public int xOffset;
     public int yOffset;
     public float scale;
-    public int colour;
+    public ValidatedColor colour;
     public TextRenderer.Anchor alignText;
     public TextRenderer.Anchor anchor;
 
@@ -23,7 +26,7 @@ public class TitleConfiguration implements Walkable {
         this.xOffset = xOffset;
         this.yOffset = yOffset;
         this.scale = scale;
-        this.colour = colour;
+        this.colour = new ValidatedColor(new Color(colour));
         this.alignText = alignText;
         this.anchor = anchor;
     }
