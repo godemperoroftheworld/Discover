@@ -8,6 +8,7 @@ modId = "discover"
 version = "${version}"
 displayName = "Discover Titles"
 authors = "Tenzin <3"
+credits = "ecarrascon for Structure Credits and Nick Young for Traveler's Titles"
 description = '''
 Adds some cute titles when you enter a biome / dimension / structure !
 '''
