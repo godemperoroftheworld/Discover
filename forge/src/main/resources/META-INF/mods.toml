@@ -6,7 +6,7 @@ license = "GNU AGPL 3.0"
 [[mods]]
 modId = "discover"
 version = "${version}"
-displayName = "Discover Titles"
+displayName = "Discover"
 authors = "Tenzin <3"
 credits = "ecarrascon for Structure Credits and Nick Young for Traveler's Titles"
 description = '''
