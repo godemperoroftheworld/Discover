@@ -12,7 +12,7 @@ credits = "ecarrascon for Structure Credits and Nick Young for Traveler's Titles
 description = '''
 Adds some cute titles when you enter a biome / dimension / structure !
 '''
-#logoFile = ""
+logoFile = "icon.png"
 
 [[dependencies.discover]]
 modId = "forge"
