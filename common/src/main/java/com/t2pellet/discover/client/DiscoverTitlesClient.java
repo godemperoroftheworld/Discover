@@ -9,11 +9,8 @@ import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 
 public class DiscoverTitlesClient {
-
-    private static MinecraftServer currentServer;
 
     public static void init() {
         ClientGuiEvent.RENDER_HUD.register(TextRenderManager.INSTANCE);

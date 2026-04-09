@@ -10,10 +10,12 @@ import java.util.function.Supplier;
 
 public class DiscoverSounds {
 
+    private static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(DiscoverTitles.MOD_ID, Registries.SOUND_EVENT);
+
     public static final SoundHolder DIMENSION_DISCOVERED = new SoundHolder("dimension");
     public static final SoundHolder BIOME_DISCOVERED = new SoundHolder("biome");
     public static final SoundHolder STRUCTURE_DISCOVERED = new SoundHolder("structure");
-    private static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(DiscoverTitles.MOD_ID, Registries.SOUND_EVENT);
+
     private DiscoverSounds() {
     }
 

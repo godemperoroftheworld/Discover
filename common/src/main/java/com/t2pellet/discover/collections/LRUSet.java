@@ -1,4 +1,4 @@
-package com.t2pellet.discover.util;
+package com.t2pellet.discover.collections;
 
 import org.jetbrains.annotations.NotNull;
 
