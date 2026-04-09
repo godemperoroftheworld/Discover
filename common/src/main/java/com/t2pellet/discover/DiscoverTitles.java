@@ -1,28 +1,17 @@
 package com.t2pellet.discover;
 
-import com.t2pellet.discover.network.BoundaryMessage;
-import com.t2pellet.discover.util.BoundaryFinder;
-import dev.architectury.event.EventResult;
-import dev.architectury.event.events.common.BlockEvent;
-import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
-
-import java.util.Optional;
+import dev.architectury.event.events.common.LifecycleEvent;
+import net.minecraft.server.MinecraftServer;
 
 public final class DiscoverTitles {
     public static final String MOD_ID = "discover";
     public static final String TRAVELER_TITLE_COMPAT_ID = "travelerstitles";
 
+    public static MinecraftServer currentServer = null;
+
     public static void init() {
-        BlockEvent.PLACE.register((level, pos, state, placer) -> {
-            if (placer instanceof ServerPlayer player && state.getBlock() == Blocks.WALL_TORCH) {
-                Direction direction = placer.getDirection();
-                Optional<BoundingBox> bounds = new BoundaryFinder(level, pos, direction).search();
-                bounds.ifPresent(boundingBox -> new BoundaryMessage(boundingBox).sendTo(player));
-            }
-            return EventResult.pass();
+        LifecycleEvent.SERVER_STARTED.register(server -> {
+            currentServer = server;
         });
     }
 }

@@ -7,15 +7,15 @@ import net.minecraft.server.TickTask;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
-public class DiscoverScheduler implements ClientTickEvent<Minecraft> {
+public class DiscoverScheduler<T> implements ClientTickEvent<T> {
 
     private final PriorityQueue<TickTask> queue = new PriorityQueue<TickTask>(Comparator.comparingInt(TickTask::getTick));
-    private int currentTick = 0;
+    protected int currentTick = 0;
 
     protected DiscoverScheduler() {}
 
     @Override
-    public void tick(Minecraft instance) {
+    public void tick(T instance) {
         TickTask top = queue.peek();
         if (top != null && top.getTick() <= currentTick) {
             TickTask next = queue.poll();

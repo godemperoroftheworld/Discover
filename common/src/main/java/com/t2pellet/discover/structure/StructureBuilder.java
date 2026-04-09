@@ -1,8 +1,9 @@
-package com.t2pellet.discover.util;
+package com.t2pellet.discover.structure;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -13,18 +14,24 @@ import net.minecraft.world.phys.HitResult;
 import java.util.*;
 
 // Utility class to help me get house boundaries
-public class BoundaryFinder {
+public class StructureBuilder {
 
     private static final int MAX_SIZE = 40000;
     private static final int SCAN_SIZE = 10;
 
+    private final Player player;
+    private final String name;
     private final Level level;
     private final BlockPos startPos;
+    private final Direction facing;
     private final Queue<BlockPos> queue = new ArrayDeque<>();
     private final Set<BlockPos> visited = new HashSet<>();
 
-    public BoundaryFinder(Level level, BlockPos startPos, Direction facing) {
-        this.level = level;
+    public StructureBuilder(String name, Player player, BlockPos startPos) {
+        this.name = name;
+        this.player = player;
+        this.facing = player.getDirection();
+        this.level = player.level();
         // Query for air block in the vicinity of startPos
         BlockPos airPos = null;
         for (int offset = -1; offset <= SCAN_SIZE; ++offset) {
@@ -37,7 +44,7 @@ public class BoundaryFinder {
         this.startPos = Objects.requireNonNullElse(airPos, startPos);
     }
 
-    public Optional<BoundingBox> search() {
+    public Optional<PlayerStructure> search() {
         queue.add(startPos);
         visited.add(startPos);
 
@@ -60,7 +67,7 @@ public class BoundaryFinder {
             // encapsulate is deprecated for some reason
             BlockPos min = new BlockPos(box.minX(), box.minY(), box.minZ()).offset(-2, -1, -2);
             BlockPos max = new BlockPos(box.maxX(), box.maxY(), box.maxZ()).offset(3, 2, 3);
-            return BoundingBox.fromCorners(min, max);
+            return new PlayerStructure(name, player.getUUID(), BoundingBox.fromCorners(min, max));
         });
     }
 

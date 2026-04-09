@@ -1,4 +1,8 @@
 {
+  "discover.boundary.create": "Create Structure Boundary",
+  "discover.boundary.created": "Created structure boundary",
+  "discover.boundary.error": "Unable to delineate structure boundary",
+  "discover.boundary.name_required": "Must provide name for structure",
   "discover.type.biome": "Biome",
   "discover.type.dimension": "Dimension",
   "discover.type.structure": "Structure",

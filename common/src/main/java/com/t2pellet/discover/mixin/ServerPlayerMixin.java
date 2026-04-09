@@ -1,6 +1,8 @@
 package com.t2pellet.discover.mixin;
 
-import com.t2pellet.discover.network.StructureSyncMessage;
+import com.t2pellet.discover.network.TitleSyncMessage;
+import com.t2pellet.discover.title.LocationGameTitle;
+import com.t2pellet.discover.title.LocationTitle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
@@ -53,7 +55,10 @@ public class ServerPlayerMixin {
         }
 
         // Show title
-        new StructureSyncMessage(self.serverLevel(), currentStructure.getStructure()).sendTo(self);
+        new TitleSyncMessage(new LocationGameTitle(
+                LocationTitle.Type.DIMENSION,
+                location
+        )).sendTo(self);
         discover$lastStructure = currentStructure.getStructure();
     }
 

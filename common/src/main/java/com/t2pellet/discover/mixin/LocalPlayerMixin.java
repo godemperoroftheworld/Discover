@@ -1,9 +1,10 @@
 package com.t2pellet.discover.mixin;
 
-import com.t2pellet.discover.DiscoveredTitle;
 import com.t2pellet.discover.client.render.title.TextRenderManager;
 import com.t2pellet.discover.config.DiscoverConfig;
 import com.t2pellet.discover.registry.DiscoverTags;
+import com.t2pellet.discover.title.LocationGameTitle;
+import com.t2pellet.discover.title.LocationTitle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
@@ -32,11 +33,17 @@ public class LocalPlayerMixin {
     public void onTick(CallbackInfo ci) {
         LocalPlayer self = (LocalPlayer)(Object)this;
 
-        // Early return when changing / loading dimension
-        if (Minecraft.getInstance().level == null || !Minecraft.getInstance().level.isLoaded(self.blockPosition())) {
+        // Early return when level is not loaded
+        if (Minecraft.getInstance().level == null || Minecraft.getInstance().player == null || !Minecraft.getInstance().level.isLoaded(self.blockPosition())) {
             return;
         }
-
+        // Early return for singleplayer when biome data not loaded
+        if (!Minecraft.getInstance().level.getChunkSource().hasChunk(
+                Minecraft.getInstance().player.chunkPosition().x,
+                Minecraft.getInstance().player.chunkPosition().z
+        )) {
+            return;
+        }
         // Early return chunk check (for performance)
         SectionPos currentSection = SectionPos.of(self);
         if (currentSection.equals(discover$lastSection)) {
@@ -77,7 +84,7 @@ public class LocalPlayerMixin {
         }
 
         // Show title
-        DiscoveredTitle title = new DiscoveredTitle(DiscoveredTitle.Type.BIOME, location);
+        LocationGameTitle title = new LocationGameTitle(LocationTitle.Type.BIOME, location);
         TextRenderManager.INSTANCE.render(title);
         discover$lastTime = time;
     }

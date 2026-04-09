@@ -1,10 +1,11 @@
 package com.t2pellet.discover.client.render.title;
 
-import com.t2pellet.discover.DiscoveredTitle;
 import com.t2pellet.discover.client.util.DiscoverLog;
 import com.t2pellet.discover.client.util.DiscoverScheduler;
 import com.t2pellet.discover.collections.LRUSet;
 import com.t2pellet.discover.config.DiscoverConfig;
+import com.t2pellet.discover.title.LocationGameTitle;
+import com.t2pellet.discover.title.LocationTitle;
 import com.t2pellet.discover.util.SoundUtil;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import net.minecraft.client.Minecraft;
@@ -17,20 +18,21 @@ import java.util.Map;
 
 import static com.t2pellet.discover.DiscoverTitles.TRAVELER_TITLE_COMPAT_ID;
 
-public class TextRenderManager extends DiscoverScheduler implements ClientGuiEvent.RenderHud {
+public class TextRenderManager extends DiscoverScheduler<Minecraft> implements ClientGuiEvent.RenderHud {
 
     public static final TextRenderManager INSTANCE = new TextRenderManager();
 
-    private final LRUSet<ResourceLocation> recentSet = new LRUSet<>(DiscoverConfig.INSTANCE.cooldownCount.get());
+    private final LRUSet<String> recentSet = new LRUSet<>(DiscoverConfig.INSTANCE.cooldownCount.get());
 
-    private final Map<DiscoveredTitle.Type, TextRenderer> renderers = new HashMap<>();
+    private final Map<LocationTitle.Type, TextRenderer> renderers = new HashMap<>();
     private final TextRenderer CREDITS = new TextRenderer(DiscoverConfig.INSTANCE.credits);
 
     private TextRenderManager() {
         super();
-        this.renderers.put(DiscoveredTitle.Type.BIOME, new TextRenderer(DiscoverConfig.INSTANCE.biome));
-        this.renderers.put(DiscoveredTitle.Type.DIMENSION, new TextRenderer(DiscoverConfig.INSTANCE.dimension));
-        this.renderers.put(DiscoveredTitle.Type.STRUCTURE, new TextRenderer(DiscoverConfig.INSTANCE.structure));
+        this.renderers.put(LocationTitle.Type.BIOME, new TextRenderer(DiscoverConfig.INSTANCE.biome));
+        this.renderers.put(LocationTitle.Type.DIMENSION, new TextRenderer(DiscoverConfig.INSTANCE.dimension));
+        this.renderers.put(LocationTitle.Type.STRUCTURE, new TextRenderer(DiscoverConfig.INSTANCE.structure));
+        this.renderers.put(LocationTitle.Type.PLAYER, new TextRenderer(DiscoverConfig.INSTANCE.player));
     }
 
     @Override
@@ -50,19 +52,25 @@ public class TextRenderManager extends DiscoverScheduler implements ClientGuiEve
         return this.renderers.values().stream().anyMatch(TextRenderer::isShowing);
     }
 
-    public boolean isRendering(DiscoveredTitle.Type type) {
+    public boolean isRendering(LocationTitle.Type type) {
         return this.renderers.get(type).isShowing();
     }
 
-    public void render(DiscoveredTitle title) {
+    public void render(LocationTitle title) {
         TextRenderer renderer = this.renderers.get(title.type());
-        if (renderer.config.blacklist.contains(title.location())) return;
 
-        if (DiscoverLog.INSTANCE.hasVisited(title.location())) return;
-        if (recentSet.contains(title.location())) return;
+        // Check blacklist and log for "game" titles (not supported in player titles yet)
+        if (title instanceof LocationGameTitle gameTitle) {
+            if (renderer.config.blacklist.contains(gameTitle.location)) {
+                return;
+            }
+            if (DiscoverLog.INSTANCE.hasVisited(gameTitle.location)) return;
+        }
+
+        if (recentSet.contains(title.title())) return;
 
         if (renderer.isEnabled() && !renderer.isShowing()) {
-            Integer colour = title.getColour();
+            Integer colour = title.colour();
             if (colour != null) renderer.setColour(colour);
             else renderer.resetColour();
             // Play sound
@@ -78,20 +86,22 @@ public class TextRenderManager extends DiscoverScheduler implements ClientGuiEve
                 }
             }
             // Show title
-            renderer.showTitle(title.getFriendlyName());
+            renderer.showTitle(title.title());
             renderCredit(title);
-            // Add to log and recent set
-            DiscoverLog.INSTANCE.add(title.location());
-            recentSet.add(title.location());
+            // Add to log and recent set (for game titles)
+            if (title instanceof LocationGameTitle gameTitle) {
+                DiscoverLog.INSTANCE.add(gameTitle.location);
+            }
+            recentSet.add(title.title());
         }
     }
 
-    private void renderCredit(DiscoveredTitle title) {
+    private void renderCredit(LocationTitle title) {
         if (!CREDITS.isEnabled()) return;
         if (CREDITS.isShowing()) {
             runInTicks(CREDITS.getShowingTime(), () -> renderCredit(title));
         } else {
-            CREDITS.showTitle(title.getFriendlyCredit());
+            CREDITS.showTitle(title.credit());
         }
     }
 }
