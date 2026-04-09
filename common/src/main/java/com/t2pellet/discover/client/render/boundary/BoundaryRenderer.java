@@ -20,14 +20,14 @@ public class BoundaryRenderer {
     }
 
     public void draw() {
+        if (this.level == null) return;
+
         double minX = box.minX();
         double minY = box.minY();
         double minZ = box.minZ();
         double maxX = box.maxX();
         double maxY = box.maxY();
         double maxZ = box.maxZ();
-
-        System.out.println("DRAWING");
 
         // Draw the 4 vertical pillars
         drawLine(new Vec3(minX, minY, minZ), new Vec3(minX, maxY, minZ));

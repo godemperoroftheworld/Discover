@@ -1,4 +1,5 @@
 {
+  "discover.unknown_player": "Unknown",
   "discover.boundary.create": "Create Structure Boundary",
   "discover.boundary.created": "Created structure boundary",
   "discover.boundary.error": "Unable to delineate structure boundary",

@@ -1,6 +1,9 @@
 package com.t2pellet.discover.structure;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
@@ -8,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PlayerStructures extends SavedData {
 
@@ -23,7 +27,10 @@ public class PlayerStructures extends SavedData {
     }
 
     static PlayerStructures load(CompoundTag compoundTag) {
-        return new PlayerStructures();
+        ListTag listTag = compoundTag.getList("structures", Tag.TAG_COMPOUND);
+        PlayerStructures structures = new PlayerStructures();
+        listTag.forEach((tag) -> structures.add(PlayerStructure.load((CompoundTag) tag)));
+        return structures;
     }
 
     public void add(PlayerStructure structure) {
@@ -36,9 +43,15 @@ public class PlayerStructures extends SavedData {
         this.setDirty();
     }
 
+    public Set<PlayerStructure> containing(BlockPos pos) {
+        return this.structures.stream().filter((s) -> s.contains(pos)).collect(Collectors.toSet());
+    }
+
     @Override
     public @NotNull CompoundTag save(CompoundTag compoundTag) {
-        structures.forEach(structure -> compoundTag.put(structure.uuid.toString(), structure.save()));
+        ListTag listTag = new ListTag();
+        structures.forEach(structure -> listTag.add(structure.save()));
+        compoundTag.put("structures", listTag);
         return compoundTag;
     }
 

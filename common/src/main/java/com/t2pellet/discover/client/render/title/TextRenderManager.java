@@ -67,7 +67,7 @@ public class TextRenderManager extends DiscoverScheduler<Minecraft> implements C
             if (DiscoverLog.INSTANCE.hasVisited(gameTitle.location)) return;
         }
 
-        if (recentSet.contains(title.title())) return;
+        if (this.shouldCheckRecency() && recentSet.contains(title.title())) return;
 
         if (renderer.isEnabled() && !renderer.isShowing()) {
             Integer colour = title.colour();
@@ -92,7 +92,9 @@ public class TextRenderManager extends DiscoverScheduler<Minecraft> implements C
             if (title instanceof LocationGameTitle gameTitle) {
                 DiscoverLog.INSTANCE.add(gameTitle.location);
             }
-            recentSet.add(title.title());
+            if (this.shouldCheckRecency()) {
+                recentSet.add(title.title());
+            }
         }
     }
 
@@ -103,5 +105,9 @@ public class TextRenderManager extends DiscoverScheduler<Minecraft> implements C
         } else {
             CREDITS.showTitle(title.credit());
         }
+    }
+
+    private boolean shouldCheckRecency() {
+        return DiscoverConfig.INSTANCE.cooldownCount.get() > 0;
     }
 }

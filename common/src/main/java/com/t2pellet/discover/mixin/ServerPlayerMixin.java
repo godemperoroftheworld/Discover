@@ -1,11 +1,16 @@
 package com.t2pellet.discover.mixin;
 
+import com.t2pellet.discover.DiscoverTitles;
 import com.t2pellet.discover.network.TitleSyncMessage;
+import com.t2pellet.discover.structure.PlayerStructure;
+import com.t2pellet.discover.structure.PlayerStructures;
 import com.t2pellet.discover.title.LocationGameTitle;
+import com.t2pellet.discover.title.LocationRawTitle;
 import com.t2pellet.discover.title.LocationTitle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,6 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Mixin(ServerPlayer.class)
 public class ServerPlayerMixin {
@@ -27,13 +33,39 @@ public class ServerPlayerMixin {
 
     @Inject(method = "setLastSectionPos", at = @At("HEAD"))
     private void onLastSectionUpdated(SectionPos sectionPos, CallbackInfo ci) {
-        ServerPlayer self = (ServerPlayer)(Object)this;
+        ServerPlayer self = (ServerPlayer) (Object) this;
         SectionPos lastSection = self.getLastSectionPos();
 
         // Early return chunk check (for performance)
         if (sectionPos.equals(lastSection)) {
             return;
         }
+
+        discover$_handleStructure(sectionPos);
+        discover$_handlePlayerStructure(sectionPos);
+    }
+
+    @Unique
+    private void discover$_handlePlayerStructure(SectionPos sectionPos) {
+        ServerPlayer self = (ServerPlayer) (Object) this;
+        PlayerStructures structures = PlayerStructures.get(self.serverLevel());
+
+        Set<PlayerStructure> structuresInSection = structures.containing(sectionPos.center());
+        structuresInSection.stream().findAny().ifPresent(structure -> {
+            ServerPlayer player = DiscoverTitles.currentServer.getPlayerList().getPlayer(structure.player);
+            String playerName = player != null ? player.getName().getString() : Language.getInstance().getOrDefault("discover.unknown_player");
+            new TitleSyncMessage(new LocationRawTitle(
+                    LocationTitle.Type.PLAYER,
+                    structure.name,
+                    playerName
+            )).sendTo(self);
+        });
+    }
+
+    @Unique
+    private void discover$_handleStructure(SectionPos sectionPos) {
+        ServerPlayer self = (ServerPlayer)(Object)this;
+        SectionPos lastSection = self.getLastSectionPos();
 
         // Get the current structure, early return if none
         Optional<StructureStart> found = mixin$_findStructure(sectionPos);
@@ -56,7 +88,7 @@ public class ServerPlayerMixin {
 
         // Show title
         new TitleSyncMessage(new LocationGameTitle(
-                LocationTitle.Type.DIMENSION,
+                LocationTitle.Type.STRUCTURE,
                 location
         )).sendTo(self);
         discover$lastStructure = currentStructure.getStructure();

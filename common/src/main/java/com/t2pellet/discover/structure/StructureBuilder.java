@@ -2,6 +2,7 @@ package com.t2pellet.discover.structure;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.SectionPos;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -23,14 +24,13 @@ public class StructureBuilder {
     private final String name;
     private final Level level;
     private final BlockPos startPos;
-    private final Direction facing;
     private final Queue<BlockPos> queue = new ArrayDeque<>();
     private final Set<BlockPos> visited = new HashSet<>();
 
     public StructureBuilder(String name, Player player, BlockPos startPos) {
         this.name = name;
         this.player = player;
-        this.facing = player.getDirection();
+        Direction facing = player.getDirection();
         this.level = player.level();
         // Query for air block in the vicinity of startPos
         BlockPos airPos = null;
@@ -59,16 +59,7 @@ public class StructureBuilder {
             }
         }
 
-        if (visited.size() > MAX_SIZE) {
-            return Optional.empty();
-        }
-
-        return BoundingBox.encapsulatingPositions(visited).map((box) -> {
-            // encapsulate is deprecated for some reason
-            BlockPos min = new BlockPos(box.minX(), box.minY(), box.minZ()).offset(-2, -1, -2);
-            BlockPos max = new BlockPos(box.maxX(), box.maxY(), box.maxZ()).offset(3, 2, 3);
-            return new PlayerStructure(name, player.getUUID(), BoundingBox.fromCorners(min, max));
-        });
+        return this.getPlayerStructure();
     }
 
     private List<BlockPos> getNeighbours(BlockPos pos) {
@@ -90,6 +81,21 @@ public class StructureBuilder {
             ClipContext context = new ClipContext(pos.getCenter(), p.getCenter(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, dummy);
             BlockHitResult result = level.clip(context);
             return result.getType() == HitResult.Type.BLOCK;
+        });
+    }
+
+    private Optional<PlayerStructure> getPlayerStructure() {
+        if (visited.size() > MAX_SIZE) {
+            return Optional.empty();
+        }
+
+        return BoundingBox.encapsulatingPositions(visited).map((box) -> {
+            BlockPos min = new BlockPos(box.minX(), box.minY(), box.minZ()).offset(-2, -1, -2);
+            BlockPos max = new BlockPos(box.maxX(), box.maxY(), box.maxZ()).offset(3, 2, 3);
+            SectionPos minSection = SectionPos.of(min);
+            SectionPos maxSection = SectionPos.of(max);
+            BoundingBox inflated = new BoundingBox(minSection.minBlockX(), minSection.minBlockY(), minSection.minBlockZ(), maxSection.maxBlockX(), maxSection.maxBlockY(), maxSection.maxBlockZ());
+            return new PlayerStructure(name, player.getUUID(), inflated);
         });
     }
 }

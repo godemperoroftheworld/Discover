@@ -1,5 +1,6 @@
 package com.t2pellet.discover.structure;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
@@ -20,7 +21,13 @@ public class PlayerStructure {
         this.uuid = uuid;
         this.name = name;
         this.player = player;
+        // Inflate box to sections
+
         this.box = box;
+    }
+
+    public boolean contains(BlockPos pos) {
+        return this.box.isInside(pos.getX(), pos.getY(), pos.getZ());
     }
 
     public static PlayerStructure load(CompoundTag tag) {
