@@ -59,11 +59,11 @@ public class LocalPlayerMixin {
         }
 
         // Special handling when underground, only consider cave biomes
-        boolean dimensionHasCeiling = Minecraft.getInstance().level.dimensionType().hasCeiling();
+        boolean dimensionHasSky = Minecraft.getInstance().level.dimensionType().hasSkyLight();
         boolean isSkyObstructed = !Minecraft.getInstance().level.canSeeSkyFromBelowWater(self.blockPosition());
         // My hacky attempt at figuring out what's a cave biome
         boolean isCaveBiome = biome.is(DiscoverTags.IS_CAVE);
-        if (!dimensionHasCeiling && isSkyObstructed && !isCaveBiome) {
+        if (dimensionHasSky && isSkyObstructed && !isCaveBiome) {
             return;
         }
 

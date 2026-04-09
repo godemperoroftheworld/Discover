@@ -10,10 +10,11 @@ import net.minecraft.resources.ResourceLocation;
 
 public class DiscoverConfig extends Config {
 
-    public ValidatedEnum<Mode> mode = new ValidatedEnum<>(Mode.ONCE_PER_SESSION);
-
     public static final DiscoverConfig INSTANCE = ConfigApiJava.registerAndLoadConfig(DiscoverConfig::new);
-    public ValidatedInt cooldownTicks = new ValidatedInt(100);
+    public ValidatedInt cooldownTicks = new ValidatedInt(120);
+
+    public ValidatedEnum<Mode> mode = new ValidatedEnum<>(Mode.ONCE_PER_SESSION);
+    public ValidatedInt hideWithinLast = new ValidatedInt(5);
     public enum Mode {
         ONCE_PER_SESSION,
         ONCE_PER_WORLD,

@@ -4,9 +4,11 @@ import com.t2pellet.discover.DiscoveredTitle;
 import com.t2pellet.discover.client.util.DiscoverLog;
 import com.t2pellet.discover.client.util.DiscoverScheduler;
 import com.t2pellet.discover.config.DiscoverConfig;
+import com.t2pellet.discover.util.LRUSet;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +16,8 @@ import java.util.Map;
 public class TextRenderManager extends DiscoverScheduler implements ClientGuiEvent.RenderHud {
 
     public static final TextRenderManager INSTANCE = new TextRenderManager();
+
+    private final LRUSet<ResourceLocation> recentSet = new LRUSet<>(DiscoverConfig.INSTANCE.hideWithinLast.get());
 
     private final Map<DiscoveredTitle.Type, TextRenderer> renderers = new HashMap<>();
     private final TextRenderer CREDITS = new TextRenderer(DiscoverConfig.INSTANCE.credits);
@@ -47,10 +51,11 @@ public class TextRenderManager extends DiscoverScheduler implements ClientGuiEve
     }
 
     public void render(DiscoveredTitle title) {
-        if (DiscoverLog.INSTANCE.hasVisited(title.location())) return;
-
         TextRenderer renderer = this.renderers.get(title.type());
         if (renderer.config.blacklist.contains(title.location())) return;
+
+        if (DiscoverLog.INSTANCE.hasVisited(title.location())) return;
+        if (recentSet.contains(title.location())) return;
 
         if (renderer.isEnabled() && !renderer.isShowing()) {
             Integer colour = title.getColour();
@@ -59,6 +64,7 @@ public class TextRenderManager extends DiscoverScheduler implements ClientGuiEve
             renderer.setTitle(title.getFriendlyName());
             renderCredit(title);
             DiscoverLog.INSTANCE.add(title.location());
+            recentSet.add(title.location());
         }
     }
 
