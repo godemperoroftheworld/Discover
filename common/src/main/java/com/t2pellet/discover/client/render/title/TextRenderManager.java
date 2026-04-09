@@ -1,4 +1,4 @@
-package com.t2pellet.discover.client.render;
+package com.t2pellet.discover.client.render.title;
 
 import com.t2pellet.discover.DiscoveredTitle;
 import com.t2pellet.discover.client.util.DiscoverLog;

@@ -1,22 +1,26 @@
 package com.t2pellet.discover.config;
 
 import com.t2pellet.discover.DiscoverTitles;
-import com.t2pellet.discover.client.render.TextRenderer;
+import com.t2pellet.discover.client.render.title.TextRenderer;
 import com.t2pellet.discover.registry.DiscoverSounds;
 import me.fzzyhmstrs.fzzy_config.api.ConfigApiJava;
 import me.fzzyhmstrs.fzzy_config.config.Config;
+import me.fzzyhmstrs.fzzy_config.validation.minecraft.ValidatedIdentifier;
 import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedEnum;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedInt;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 
 public class DiscoverConfig extends Config {
 
     public static final DiscoverConfig INSTANCE = ConfigApiJava.registerAndLoadConfig(DiscoverConfig::new);
 
-    public ValidatedInt cooldownTicks = new ValidatedInt(120);
-
     public ValidatedEnum<Mode> mode = new ValidatedEnum<>(Mode.ONCE_PER_SESSION);
+
+    public ValidatedInt cooldownTicks = new ValidatedInt(120);
     public ValidatedInt cooldownCount = new ValidatedInt(5);
+    public ValidatedIdentifier blessingItem = ValidatedIdentifier.ofRegistryKey(Registries.ITEM);
+
     public TitleConfiguration dimension = new TitleConfiguration.Builder().scale(3.0F).yOffset(-66).sound(DiscoverSounds.DIMENSION_DISCOVERED.location).build();
     public TitleConfiguration biome = new TitleConfiguration.Builder().scale(2.25F).yOffset(-42).sound(DiscoverSounds.BIOME_DISCOVERED.location).build();
     public TitleConfiguration structure = new TitleConfiguration.Builder().scale(1.5F).yOffset(-18).sound(DiscoverSounds.STRUCTURE_DISCOVERED.location).build();

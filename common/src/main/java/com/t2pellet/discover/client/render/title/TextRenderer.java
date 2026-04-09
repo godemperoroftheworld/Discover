@@ -1,4 +1,4 @@
-package com.t2pellet.discover.client.render;
+package com.t2pellet.discover.client.render.title;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;

@@ -1,9 +1,11 @@
 package com.t2pellet.discover;
 
+import com.t2pellet.discover.network.BoundaryMessage;
 import com.t2pellet.discover.util.BoundaryFinder;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.BlockEvent;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
@@ -15,9 +17,10 @@ public final class DiscoverTitles {
 
     public static void init() {
         BlockEvent.PLACE.register((level, pos, state, placer) -> {
-            if (state.getBlock() == Blocks.WALL_TORCH) {
+            if (placer instanceof ServerPlayer player && state.getBlock() == Blocks.WALL_TORCH) {
                 Direction direction = placer.getDirection();
                 Optional<BoundingBox> bounds = new BoundaryFinder(level, pos, direction).search();
+                bounds.ifPresent(boundingBox -> new BoundaryMessage(boundingBox).sendTo(player));
             }
             return EventResult.pass();
         });

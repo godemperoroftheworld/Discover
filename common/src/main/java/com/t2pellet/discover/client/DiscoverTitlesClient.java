@@ -1,7 +1,7 @@
 package com.t2pellet.discover.client;
 
 import com.t2pellet.discover.DiscoveredTitle;
-import com.t2pellet.discover.client.render.TextRenderManager;
+import com.t2pellet.discover.client.render.title.TextRenderManager;
 import com.t2pellet.discover.client.util.DiscoverLog;
 import com.t2pellet.discover.registry.DiscoverSounds;
 import dev.architectury.event.events.client.ClientGuiEvent;

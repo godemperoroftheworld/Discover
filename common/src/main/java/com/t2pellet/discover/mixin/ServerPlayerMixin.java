@@ -41,7 +41,7 @@ public class ServerPlayerMixin {
         }
         StructureStart currentStructure = found.get();
 
-        // Early return if in same structure
+        // Early return if in the same structure
         if (currentStructure.getStructure().equals(discover$lastStructure)) {
             return;
         }

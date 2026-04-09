@@ -2,8 +2,13 @@ package com.t2pellet.discover.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 
 import java.util.*;
 
@@ -12,20 +17,19 @@ public class BoundaryFinder {
 
     private static final int MAX_SIZE = 40000;
     private static final int SCAN_SIZE = 10;
-    private static final List<Direction> DIRECTIONS = Arrays.asList(Direction.values());
 
-    private final LevelAccessor level;
+    private final Level level;
     private final BlockPos startPos;
     private final Queue<BlockPos> queue = new ArrayDeque<>();
     private final Set<BlockPos> visited = new HashSet<>();
 
-    public BoundaryFinder(LevelAccessor level, BlockPos startPos, Direction facing) {
+    public BoundaryFinder(Level level, BlockPos startPos, Direction facing) {
         this.level = level;
         // Query for air block in the vicinity of startPos
         BlockPos airPos = null;
         for (int offset = -1; offset <= SCAN_SIZE; ++offset) {
             BlockPos pos = startPos.relative(facing, offset);
-            if (this.isAir(pos) && !level.canSeeSky(pos)) {
+            if (this.isAir(pos) && this.isInsideSomething(pos)) {
                 airPos = pos;
                 break;
             }
@@ -49,14 +53,14 @@ public class BoundaryFinder {
         }
 
         if (visited.size() > MAX_SIZE) {
-            return null;
+            return Optional.empty();
         }
 
         return BoundingBox.encapsulatingPositions(visited).map((box) -> {
             // encapsulate is deprecated for some reason
-            BlockPos min = new BlockPos(box.minX(), box.minY(), box.minZ()).offset(-1, -1, -1);
-            BlockPos max = new BlockPos(box.maxX(), box.maxY(), box.maxZ());
-            return BoundingBox.fromCorners(min, max).inflatedBy(2);
+            BlockPos min = new BlockPos(box.minX(), box.minY(), box.minZ()).offset(-2, -1, -2);
+            BlockPos max = new BlockPos(box.maxX(), box.maxY(), box.maxZ()).offset(3, 2, 3);
+            return BoundingBox.fromCorners(min, max);
         });
     }
 
@@ -70,5 +74,15 @@ public class BoundaryFinder {
 
     private boolean isAir(BlockPos pos) {
         return level.getBlockState(pos).isAir();
+    }
+
+    private boolean isInsideSomething(BlockPos pos) {
+        BlockPos[] positions = new BlockPos[]{pos.above(50), pos.east(50), pos.south(50), pos.west(50), pos.north(50)};
+        return Arrays.stream(positions).allMatch(p -> {
+            ItemEntity dummy = new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), ItemStack.EMPTY);
+            ClipContext context = new ClipContext(pos.getCenter(), p.getCenter(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, dummy);
+            BlockHitResult result = level.clip(context);
+            return result.getType() == HitResult.Type.BLOCK;
+        });
     }
 }

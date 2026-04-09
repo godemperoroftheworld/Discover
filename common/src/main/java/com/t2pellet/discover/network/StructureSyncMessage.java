@@ -1,7 +1,7 @@
 package com.t2pellet.discover.network;
 
 import com.t2pellet.discover.DiscoveredTitle;
-import com.t2pellet.discover.client.render.TextRenderManager;
+import com.t2pellet.discover.client.render.title.TextRenderManager;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.networking.simple.BaseS2CMessage;
 import dev.architectury.networking.simple.MessageType;

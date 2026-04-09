@@ -1,7 +1,7 @@
 package com.t2pellet.discover.mixin;
 
 import com.t2pellet.discover.DiscoveredTitle;
-import com.t2pellet.discover.client.render.TextRenderManager;
+import com.t2pellet.discover.client.render.title.TextRenderManager;
 import com.t2pellet.discover.config.DiscoverConfig;
 import com.t2pellet.discover.registry.DiscoverTags;
 import net.minecraft.client.Minecraft;

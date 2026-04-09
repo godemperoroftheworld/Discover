@@ -1,7 +1,7 @@
 package com.t2pellet.discover.config;
 
 import com.t2pellet.discover.DiscoverTitles;
-import com.t2pellet.discover.client.render.TextRenderer;
+import com.t2pellet.discover.client.render.title.TextRenderer;
 import me.fzzyhmstrs.fzzy_config.util.Walkable;
 import me.fzzyhmstrs.fzzy_config.validation.collection.ValidatedSet;
 import me.fzzyhmstrs.fzzy_config.validation.minecraft.ValidatedIdentifier;
