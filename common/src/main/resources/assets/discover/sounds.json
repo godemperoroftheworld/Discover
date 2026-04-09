@@ -1,0 +1,26 @@
+{
+  "biome": {
+    "category": "ambient",
+    "sounds": [
+      {
+        "name": "discover:biome"
+      }
+    ]
+  },
+  "dimension": {
+    "category": "ambient",
+    "sounds": [
+      {
+        "name": "discover:dimension"
+      }
+    ]
+  },
+  "structure": {
+    "category": "ambient",
+    "sounds": [
+      {
+        "name": "discover:structure"
+      }
+    ]
+  }
+}

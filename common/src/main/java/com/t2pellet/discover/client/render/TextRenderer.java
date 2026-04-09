@@ -46,7 +46,7 @@ public class TextRenderer implements ClientGuiEvent.RenderHud {
         setColour(config.colour.toInt());
     }
 
-    public void setTitle(String title) {
+    public void showTitle(String title) {
         this.title = title;
         this.titleTime = this.totalTicks;
     }

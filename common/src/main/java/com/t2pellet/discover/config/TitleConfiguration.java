@@ -1,11 +1,13 @@
 package com.t2pellet.discover.config;
 
+import com.t2pellet.discover.DiscoverTitles;
 import com.t2pellet.discover.client.render.TextRenderer;
 import me.fzzyhmstrs.fzzy_config.util.Walkable;
 import me.fzzyhmstrs.fzzy_config.validation.collection.ValidatedSet;
 import me.fzzyhmstrs.fzzy_config.validation.minecraft.ValidatedIdentifier;
 import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedBoolean;
 import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedColor;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 
 import java.awt.*;
@@ -26,8 +28,9 @@ public class TitleConfiguration implements Walkable {
     public TextRenderer.Anchor anchor;
     public ValidatedBoolean shadow;
     public ValidatedSet<ResourceLocation> blacklist;
+    public ValidatedIdentifier sound;
 
-    public TitleConfiguration(ValidatedBoolean enabled, int fadeInTicks, int displayTicks, int fadeOutTicks, int timeOffsetTicks, int xOffset, int yOffset, float scale, int colour, TextRenderer.Anchor alignText, TextRenderer.Anchor anchor, ValidatedBoolean shadow, ValidatedSet<ResourceLocation> blacklist) {
+    public TitleConfiguration(ValidatedBoolean enabled, int fadeInTicks, int displayTicks, int fadeOutTicks, int timeOffsetTicks, int xOffset, int yOffset, float scale, int colour, TextRenderer.Anchor alignText, TextRenderer.Anchor anchor, ValidatedBoolean shadow, ValidatedSet<ResourceLocation> blacklist, ValidatedIdentifier sound) {
         this.enabled = enabled;
         this.fadeInTicks = fadeInTicks;
         this.displayTicks = displayTicks;
@@ -41,6 +44,7 @@ public class TitleConfiguration implements Walkable {
         this.anchor = anchor;
         this.shadow = shadow;
         this.blacklist = blacklist;
+        this.sound = sound;
     }
 
     public static class Builder {
@@ -57,6 +61,7 @@ public class TitleConfiguration implements Walkable {
         public TextRenderer.Anchor anchor = TextRenderer.Anchor.CENTER;
         public boolean shadow = true;
         public List<ResourceLocation> blacklist = new ArrayList<>();
+        public ResourceLocation sound = new ResourceLocation(DiscoverTitles.MOD_ID, "none");
 
         public Builder fadeInTicks(int fadeInTicks) {
             this.fadeInTicks = fadeInTicks;
@@ -118,9 +123,27 @@ public class TitleConfiguration implements Walkable {
             return this;
         }
 
+        public Builder sound(ResourceLocation sound) {
+            this.sound = sound;
+            return this;
+        }
+
         public TitleConfiguration build() {
             return new TitleConfiguration(
-                    new ValidatedBoolean(enabled), fadeInTicks, displayTicks, fadeOutTicks, timeOffsetTicks, xOffset, yOffset, scale, colour, alignText, anchor, new ValidatedBoolean(shadow), new ValidatedIdentifier().toSet(blacklist)
+                    new ValidatedBoolean(enabled),
+                    fadeInTicks,
+                    displayTicks,
+                    fadeOutTicks,
+                    timeOffsetTicks,
+                    xOffset,
+                    yOffset,
+                    scale,
+                    colour,
+                    alignText,
+                    anchor,
+                    new ValidatedBoolean(shadow),
+                    new ValidatedIdentifier().toSet(blacklist),
+                    ValidatedIdentifier.ofRegistryKey(sound, Registries.SOUND_EVENT, (x, y) -> true)
             );
         }
     }

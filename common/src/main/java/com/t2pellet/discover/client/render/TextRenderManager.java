@@ -5,19 +5,23 @@ import com.t2pellet.discover.client.util.DiscoverLog;
 import com.t2pellet.discover.client.util.DiscoverScheduler;
 import com.t2pellet.discover.config.DiscoverConfig;
 import com.t2pellet.discover.util.LRUSet;
+import com.t2pellet.discover.util.SoundUtil;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.t2pellet.discover.DiscoverTitles.TRAVELER_TITLE_COMPAT_ID;
 
 public class TextRenderManager extends DiscoverScheduler implements ClientGuiEvent.RenderHud {
 
     public static final TextRenderManager INSTANCE = new TextRenderManager();
 
-    private final LRUSet<ResourceLocation> recentSet = new LRUSet<>(DiscoverConfig.INSTANCE.hideWithinLast.get());
+    private final LRUSet<ResourceLocation> recentSet = new LRUSet<>(DiscoverConfig.INSTANCE.cooldownCount.get());
 
     private final Map<DiscoveredTitle.Type, TextRenderer> renderers = new HashMap<>();
     private final TextRenderer CREDITS = new TextRenderer(DiscoverConfig.INSTANCE.credits);
@@ -61,8 +65,22 @@ public class TextRenderManager extends DiscoverScheduler implements ClientGuiEve
             Integer colour = title.getColour();
             if (colour != null) renderer.setColour(colour);
             else renderer.resetColour();
-            renderer.setTitle(title.getFriendlyName());
+            // Play sound
+            if (!this.isRendering()) {
+                ResourceLocation sound = renderer.config.sound.get();
+                if (SoundUtil.doesSoundExist(sound)) {
+                    Minecraft.getInstance().player.playSound(SoundEvent.createVariableRangeEvent(sound));
+                } else {
+                    ResourceLocation compatSound = new ResourceLocation(TRAVELER_TITLE_COMPAT_ID, title.type().name);
+                    if (SoundUtil.doesSoundExist(compatSound)) {
+                        Minecraft.getInstance().player.playSound(SoundEvent.createVariableRangeEvent(compatSound));
+                    }
+                }
+            }
+            // Show title
+            renderer.showTitle(title.getFriendlyName());
             renderCredit(title);
+            // Add to log and recent set
             DiscoverLog.INSTANCE.add(title.location());
             recentSet.add(title.location());
         }
@@ -73,7 +91,7 @@ public class TextRenderManager extends DiscoverScheduler implements ClientGuiEve
         if (CREDITS.isShowing()) {
             runInTicks(CREDITS.getShowingTime(), () -> renderCredit(title));
         } else {
-            CREDITS.setTitle(title.getFriendlyCredit());
+            CREDITS.showTitle(title.getFriendlyCredit());
         }
     }
 }

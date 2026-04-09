@@ -3,6 +3,7 @@ package com.t2pellet.discover.client;
 import com.t2pellet.discover.DiscoveredTitle;
 import com.t2pellet.discover.client.render.TextRenderManager;
 import com.t2pellet.discover.client.util.DiscoverLog;
+import com.t2pellet.discover.registry.DiscoverSounds;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
@@ -24,5 +25,6 @@ public class DiscoverTitlesClient {
         });
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(DiscoverLog.INSTANCE);
         ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(DiscoverLog.INSTANCE);
+        DiscoverSounds.register();
     }
 }

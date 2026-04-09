@@ -6,9 +6,9 @@ import net.minecraft.Util;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
 
-public record DiscoveredTitle(Type type, ResourceLocation location) {
+import static com.t2pellet.discover.DiscoverTitles.TRAVELER_TITLE_COMPAT_ID;
 
-    private static final String TRAVELER_TITLE_COMPAT_ID = "travelerstitles";
+public record DiscoveredTitle(Type type, ResourceLocation location) {
 
     public Integer getColour() {
         String key = this.type.name + "." + this.location.getNamespace() + "." + this.location.getPath() + ".color";
