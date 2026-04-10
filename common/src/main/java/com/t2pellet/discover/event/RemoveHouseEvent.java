@@ -33,11 +33,7 @@ public class RemoveHouseEvent implements InteractionEvent.RightClickBlock, Block
         ServerLevel level = (ServerLevel) player.level();
         ItemStack stack = player.getItemInHand(hand);
         if (level.getBlockEntity(pos) instanceof SignBlockEntity sign && !stack.isEmpty() && this.isRemovingItem(stack)) {
-            EventResult result = this.removeHouse(level, sign, (ServerPlayer) player);
-            if (result.isTrue()) {
-                stack.shrink(1);
-            }
-            return result;
+            return this.removeHouse(level, sign, (ServerPlayer) player);
         }
         return EventResult.pass();
     }
@@ -61,6 +57,7 @@ public class RemoveHouseEvent implements InteractionEvent.RightClickBlock, Block
         PlayerStructures.get(level).remove(id);
         boundarySign.discover$_setUUID(null);
         player.displayClientMessage(Component.translatable("discover.boundary.removed"), true);
+        sign.setWaxed(false);
         return EventResult.interruptTrue();
     }
 
