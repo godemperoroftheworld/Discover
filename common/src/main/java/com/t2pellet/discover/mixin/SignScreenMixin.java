@@ -38,11 +38,11 @@ public class SignScreenMixin extends Screen {
 
     @Inject(method = "init", at = @At("TAIL"))
     public void onInit(CallbackInfo ci) {
-        this.addRenderableWidget(Button.builder(DISCOVER$CREATE_COMPONENT, this::discover$_createBoundary).bounds(this.width / 2 - 100, this.height / 4 + 120, 200, 20).build());
+        this.addRenderableWidget(Button.builder(DISCOVER$CREATE_COMPONENT, this::discover$_checkBoundary).bounds(this.width / 2 - 100, this.height / 4 + 120, 200, 20).build());
     }
 
     @Unique
-    private void discover$_createBoundary(Button button) {
+    private void discover$_checkBoundary(Button button) {
         BlockPos pos = sign.getBlockPos();
         String name = SignUtil.getFirstText(sign).orElse("");
         Player player = Minecraft.getInstance().player;

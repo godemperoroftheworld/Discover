@@ -1,13 +1,13 @@
 package com.t2pellet.discover.client.render.boundary;
 
-import com.t2pellet.discover.client.util.DiscoverScheduler;
+import com.t2pellet.discover.client.util.ClientScheduler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class BoundaryRenderManager extends DiscoverScheduler<Minecraft> {
+public class BoundaryRenderManager extends ClientScheduler {
 
     public static final BoundaryRenderManager INSTANCE = new BoundaryRenderManager();
 
