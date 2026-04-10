@@ -20,7 +20,7 @@ public class DiscoverConfig extends Config {
 
     public static final DiscoverConfig INSTANCE = ConfigApiJava.registerAndLoadConfig(DiscoverConfig::new);
 
-    public ValidatedEnum<Mode> mode = new ValidatedEnum<>(Mode.ONCE_PER_SESSION);
+    public ValidatedEnum<Mode> mode = new ValidatedEnum<>(Mode.ALWAYS);
 
     public ValidatedInt cooldownTicks = new ValidatedInt(120);
     public ValidatedInt cooldownCount = new ValidatedInt(5);
@@ -31,7 +31,6 @@ public class DiscoverConfig extends Config {
     public TitleConfiguration dimension = new TitleConfiguration.Builder().scale(3.0F).yOffset(-66).sound(DiscoverSounds.DIMENSION_DISCOVERED.location).build();
     public TitleConfiguration biome = new TitleConfiguration.Builder().scale(2.25F).yOffset(-42).sound(DiscoverSounds.BIOME_DISCOVERED.location).build();
     public TitleConfiguration structure = new TitleConfiguration.Builder().scale(1.5F).yOffset(-18).sound(DiscoverSounds.STRUCTURE_DISCOVERED.location).build();
-    public TitleConfiguration player = new TitleConfiguration.Builder().scale(1.5F).yOffset(-18).sound(DiscoverSounds.STRUCTURE_DISCOVERED.location).build();
 
     public TitleConfiguration credits = new TitleConfiguration.Builder()
             .anchor(TextRenderer.Anchor.BOTTOM_RIGHT)

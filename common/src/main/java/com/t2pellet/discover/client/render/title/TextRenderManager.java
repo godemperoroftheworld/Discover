@@ -32,7 +32,6 @@ public class TextRenderManager extends DiscoverScheduler<Minecraft> implements C
         this.renderers.put(LocationTitle.Type.BIOME, new TextRenderer(DiscoverConfig.INSTANCE.biome));
         this.renderers.put(LocationTitle.Type.DIMENSION, new TextRenderer(DiscoverConfig.INSTANCE.dimension));
         this.renderers.put(LocationTitle.Type.STRUCTURE, new TextRenderer(DiscoverConfig.INSTANCE.structure));
-        this.renderers.put(LocationTitle.Type.PLAYER, new TextRenderer(DiscoverConfig.INSTANCE.player));
     }
 
     @Override
