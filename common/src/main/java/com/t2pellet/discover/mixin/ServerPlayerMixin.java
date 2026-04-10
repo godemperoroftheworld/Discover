@@ -1,6 +1,7 @@
 package com.t2pellet.discover.mixin;
 
 import com.t2pellet.discover.DiscoverTitles;
+import com.t2pellet.discover.config.DiscoverConfig;
 import com.t2pellet.discover.network.TitleSyncMessage;
 import com.t2pellet.discover.structure.PlayerStructure;
 import com.t2pellet.discover.structure.PlayerStructures;
@@ -30,6 +31,8 @@ import java.util.Set;
 public class ServerPlayerMixin {
     @Unique
     private Structure discover$lastStructure = null;
+    @Unique
+    private long discover$lastTime = 0;
 
     @Inject(method = "setLastSectionPos", at = @At("HEAD"))
     private void onLastSectionUpdated(SectionPos sectionPos, CallbackInfo ci) {
@@ -38,6 +41,13 @@ public class ServerPlayerMixin {
 
         // Early return chunk check (for performance)
         if (sectionPos.equals(lastSection)) {
+            return;
+        }
+
+        // Early return cooldown check
+        long time = self.level().getGameTime();
+        long diff = Math.abs(time - discover$lastTime);
+        if (diff < DiscoverConfig.INSTANCE.cooldownTicks.get()) {
             return;
         }
 
@@ -65,7 +75,6 @@ public class ServerPlayerMixin {
     @Unique
     private void discover$_handleStructure(SectionPos sectionPos) {
         ServerPlayer self = (ServerPlayer)(Object)this;
-        SectionPos lastSection = self.getLastSectionPos();
 
         // Get the current structure, early return if none
         Optional<StructureStart> found = mixin$_findStructure(sectionPos);
