@@ -1,7 +1,7 @@
 package com.t2pellet.discover.client.render.title;
 
+import com.t2pellet.discover.client.util.ClientScheduler;
 import com.t2pellet.discover.client.util.DiscoverLog;
-import com.t2pellet.discover.client.util.DiscoverScheduler;
 import com.t2pellet.discover.collections.LRUSet;
 import com.t2pellet.discover.config.DiscoverConfig;
 import com.t2pellet.discover.title.LocationGameTitle;
@@ -18,7 +18,7 @@ import java.util.Map;
 
 import static com.t2pellet.discover.DiscoverTitles.TRAVELER_TITLE_COMPAT_ID;
 
-public class TextRenderManager extends DiscoverScheduler<Minecraft> implements ClientGuiEvent.RenderHud {
+public class TextRenderManager extends ClientScheduler implements ClientGuiEvent.RenderHud {
 
     public static final TextRenderManager INSTANCE = new TextRenderManager();
 
@@ -29,9 +29,11 @@ public class TextRenderManager extends DiscoverScheduler<Minecraft> implements C
 
     private TextRenderManager() {
         super();
+        TextRenderer structure = new TextRenderer(DiscoverConfig.INSTANCE.structure);
         this.renderers.put(LocationTitle.Type.BIOME, new TextRenderer(DiscoverConfig.INSTANCE.biome));
         this.renderers.put(LocationTitle.Type.DIMENSION, new TextRenderer(DiscoverConfig.INSTANCE.dimension));
-        this.renderers.put(LocationTitle.Type.STRUCTURE, new TextRenderer(DiscoverConfig.INSTANCE.structure));
+        this.renderers.put(LocationTitle.Type.STRUCTURE, structure);
+        this.renderers.put(LocationTitle.Type.PLAYER, structure);
     }
 
     @Override
