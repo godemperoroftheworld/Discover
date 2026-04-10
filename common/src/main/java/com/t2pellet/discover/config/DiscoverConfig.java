@@ -13,7 +13,11 @@ import net.minecraft.resources.ResourceLocation;
 
 public class DiscoverConfig extends Config {
 
-    public ValidatedIdentifier blessingItem = ValidatedIdentifier.ofRegistryKey(new ResourceLocation("minecraft", "honeycomb"), Registries.ITEM, (x) -> true);
+    public enum Mode {
+        ONCE_PER_SESSION,
+        ONCE_PER_WORLD,
+        ALWAYS,
+    }
 
     public static final DiscoverConfig INSTANCE = ConfigApiJava.registerAndLoadConfig(DiscoverConfig::new);
 
@@ -21,16 +25,14 @@ public class DiscoverConfig extends Config {
 
     public ValidatedInt cooldownTicks = new ValidatedInt(120);
     public ValidatedInt cooldownCount = new ValidatedInt(5);
-    public TitleConfiguration player = new TitleConfiguration.Builder().scale(1.5F).yOffset(-18).sound(DiscoverSounds.STRUCTURE_DISCOVERED.location).build();
+
+    public ValidatedIdentifier houseBlessingItem = ValidatedIdentifier.ofRegistryKey(new ResourceLocation("minecraft", "honeycomb"), Registries.ITEM, (x) -> true);
 
     public TitleConfiguration dimension = new TitleConfiguration.Builder().scale(3.0F).yOffset(-66).sound(DiscoverSounds.DIMENSION_DISCOVERED.location).build();
     public TitleConfiguration biome = new TitleConfiguration.Builder().scale(2.25F).yOffset(-42).sound(DiscoverSounds.BIOME_DISCOVERED.location).build();
     public TitleConfiguration structure = new TitleConfiguration.Builder().scale(1.5F).yOffset(-18).sound(DiscoverSounds.STRUCTURE_DISCOVERED.location).build();
-    public enum Mode {
-        ONCE_PER_SESSION,
-        ONCE_PER_WORLD,
-        ALWAYS,
-    }
+    public TitleConfiguration player = new TitleConfiguration.Builder().scale(1.5F).yOffset(-18).sound(DiscoverSounds.STRUCTURE_DISCOVERED.location).build();
+
     public TitleConfiguration credits = new TitleConfiguration.Builder()
             .anchor(TextRenderer.Anchor.BOTTOM_RIGHT)
             .alignText(TextRenderer.Anchor.BOTTOM_RIGHT)
