@@ -8,7 +8,8 @@
     "SignScreenMixin"
   ],
   "mixins": [
-    "ServerPlayerMixin"
+    "ServerPlayerMixin",
+    "SignEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

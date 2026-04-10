@@ -1,7 +1,10 @@
 package com.t2pellet.discover.structure;
 
+import com.t2pellet.discover.DiscoverTitles;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 import java.util.UUID;
@@ -21,13 +24,25 @@ public class PlayerStructure {
         this.uuid = uuid;
         this.name = name;
         this.player = player;
-        // Inflate box to sections
-
         this.box = box;
+        SectionPos min = SectionPos.of(box.minX(), box.minY(), box.minZ());
+        SectionPos max = SectionPos.of(box.maxX(), box.maxY(), box.maxZ());
+    }
+
+    public ServerPlayer getServerPlayer() {
+        return DiscoverTitles.currentServer.getPlayerList().getPlayer(this.player);
     }
 
     public boolean contains(BlockPos pos) {
-        return this.box.isInside(pos.getX(), pos.getY(), pos.getZ());
+        BoundingBox inflated = new BoundingBox(
+                (box.minX() >> 4) << 4,
+                (box.minY() >> 4) << 4,
+                (box.minZ() >> 4) << 4,
+                ((box.maxX() >> 4) << 4) + 15,
+                ((box.maxY() >> 4) << 4) + 15,
+                ((box.maxZ() >> 4) << 4) + 15
+        );
+        return inflated.isInside(pos.getX(), pos.getY(), pos.getZ());
     }
 
     public static PlayerStructure load(CompoundTag tag) {

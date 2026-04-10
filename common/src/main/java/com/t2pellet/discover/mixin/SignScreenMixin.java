@@ -1,12 +1,16 @@
 package com.t2pellet.discover.mixin;
 
-import com.t2pellet.discover.network.CreateBoundaryMessage;
+import com.t2pellet.discover.client.render.boundary.BoundaryRenderManager;
+import com.t2pellet.discover.structure.PlayerStructure;
+import com.t2pellet.discover.structure.StructureBuilder;
+import com.t2pellet.discover.util.SignUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractSignEditScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,13 +20,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Arrays;
+import java.util.Optional;
 
 @Mixin(AbstractSignEditScreen.class)
 public class SignScreenMixin extends Screen {
 
     @Unique
-    private static final Component DISCOVER$CREATE_COMPONENT = Component.translatable("discover.boundary.create");
+    private static final Component DISCOVER$CREATE_COMPONENT = Component.translatable("discover.boundary.check");
 
     @Shadow
     @Final
@@ -40,13 +44,14 @@ public class SignScreenMixin extends Screen {
     @Unique
     private void discover$_createBoundary(Button button) {
         BlockPos pos = sign.getBlockPos();
-        String name = Arrays.stream(sign.getText(true).getMessages(true))
-                .filter(s -> !s.getString().isEmpty())
-                .map(Component::getString)
-                .findFirst().orElse("");
-        if (name.isEmpty()) {
-            Minecraft.getInstance().player.displayClientMessage(Component.translatable("discover.boundary.name_required"), true);
-        }
-        new CreateBoundaryMessage(name, pos).sendToServer();
+        String name = SignUtil.getFirstText(sign).orElse("");
+        Player player = Minecraft.getInstance().player;
+        Optional<PlayerStructure> structure = new StructureBuilder(name, player, pos).search();
+        structure.ifPresentOrElse((struct) -> {
+            BoundaryRenderManager.INSTANCE.render(struct.box.inflatedBy(2));
+        }, () -> {
+            player.displayClientMessage(Component.translatable("discover.boundary.error"), true);
+        });
+        this.onClose();
     }
 }

@@ -8,7 +8,6 @@ import me.fzzyhmstrs.fzzy_config.config.Config;
 import me.fzzyhmstrs.fzzy_config.validation.minecraft.ValidatedIdentifier;
 import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedEnum;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedInt;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 
 public class DiscoverConfig extends Config {
@@ -26,7 +25,8 @@ public class DiscoverConfig extends Config {
     public ValidatedInt cooldownTicks = new ValidatedInt(120);
     public ValidatedInt cooldownCount = new ValidatedInt(5);
 
-    public ValidatedIdentifier houseBlessingItem = ValidatedIdentifier.ofRegistryKey(new ResourceLocation("minecraft", "honeycomb"), Registries.ITEM, (x) -> true);
+    public ValidatedIdentifier houseOrdainingItem = ConfigHelpers.forAnyItemOrTag(new ResourceLocation("minecraft", "honeycomb"));
+    public ValidatedIdentifier houseRemovingItem = ConfigHelpers.forAnyItemOrTag(new ResourceLocation("minecraft", "axes"));
 
     public TitleConfiguration dimension = new TitleConfiguration.Builder().scale(3.0F).yOffset(-66).sound(DiscoverSounds.DIMENSION_DISCOVERED.location).build();
     public TitleConfiguration biome = new TitleConfiguration.Builder().scale(2.25F).yOffset(-42).sound(DiscoverSounds.BIOME_DISCOVERED.location).build();

@@ -5,6 +5,7 @@
   * Change button -> check boundary -> does not save
   * Wax with honeycomb checks & saves
   * Breaking sign or unwaxing it will remove the house
+* Async or something for structure performance
 * Waystones Support
 * Via Romana support
 * Logbook (shapeless compass + map + leather)

@@ -2,14 +2,12 @@ package com.t2pellet.discover.structure;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.SectionPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.BlockHitResult;
@@ -112,16 +110,10 @@ public class StructureBuilder {
             return Optional.empty();
         }
 
-        visited.stream().forEach(p -> {
-            level.setBlock(p, Blocks.GOLD_BLOCK.defaultBlockState(), 3);
-        });
-
         return BoundingBox.encapsulatingPositions(visited).map((box) -> {
             BlockPos min = new BlockPos(box.minX(), box.minY(), box.minZ()).offset(-2, -1, -2);
             BlockPos max = new BlockPos(box.maxX(), box.maxY(), box.maxZ()).offset(3, 2, 3);
-            SectionPos minSection = SectionPos.of(min);
-            SectionPos maxSection = SectionPos.of(max);
-            BoundingBox inflated = new BoundingBox(minSection.minBlockX(), minSection.minBlockY(), minSection.minBlockZ(), maxSection.maxBlockX(), maxSection.maxBlockY(), maxSection.maxBlockZ());
+            BoundingBox inflated = new BoundingBox(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ());
             return new PlayerStructure(name, player.getUUID(), inflated);
         });
     }

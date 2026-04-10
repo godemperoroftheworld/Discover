@@ -44,7 +44,7 @@ public class BoundaryCreatedMessage extends BaseS2CMessage {
     @Override
     public void handle(NetworkManager.PacketContext context) {
         context.queue(() -> {
-            BoundaryRenderManager.INSTANCE.render(this.box);
+            BoundaryRenderManager.INSTANCE.render(this.box.inflatedBy(2));
         });
     }
 }
