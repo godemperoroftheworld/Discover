@@ -57,8 +57,7 @@ public class RemoveHouseEvent implements InteractionEvent.RightClickBlock, Block
         PlayerStructures.get(level).remove(id);
         boundarySign.discover$_setUUID(null);
         player.displayClientMessage(Component.translatable("discover.boundary.removed"), true);
-        sign.setWaxed(false);
-        return EventResult.interruptTrue();
+        return EventResult.pass();
     }
 
     private boolean isRemovingItem(ItemStack item) {

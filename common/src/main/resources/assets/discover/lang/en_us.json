@@ -5,6 +5,7 @@
   "discover.boundary.error": "Unable to delineate structure boundary",
   "discover.boundary.name_required": "Must provide name for structure",
   "discover.boundary.removed": "Removed structure boundary",
+  "discover.boundary.already_exists": "Structure already exists",
   "discover.type.biome": "Biome",
   "discover.type.dimension": "Dimension",
   "discover.type.structure": "Structure",

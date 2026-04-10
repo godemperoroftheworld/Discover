@@ -40,7 +40,7 @@ public class OrdainHouseEvent implements InteractionEvent.RightClickBlock {
             Optional<String> name = SignUtil.getFirstText(sign);
             if (name.isEmpty()) {
                 player.displayClientMessage(Component.translatable("discover.boundary.name_required"), true);
-                return EventResult.interruptFalse();
+                return EventResult.pass();
             }
             StructureBuilder finder = new StructureBuilder(name.get(), player, pos);
             Optional<PlayerStructure> structure = finder.search();
@@ -51,7 +51,7 @@ public class OrdainHouseEvent implements InteractionEvent.RightClickBlock {
                 player.displayClientMessage(Component.translatable("discover.boundary.created"), true);
                 stack.shrink(1);
                 sign.setWaxed(true);
-                return EventResult.interruptTrue();
+                return EventResult.pass();
             } else {
                 player.displayClientMessage(Component.translatable("discover.boundary.error"), true);
                 return EventResult.pass();
