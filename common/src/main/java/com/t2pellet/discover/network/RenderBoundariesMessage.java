@@ -67,9 +67,9 @@ public class RenderBoundariesMessage extends BaseS2CMessage {
         context.queue(() -> {
             this.boxes.forEach(box -> {
                 if (this.ticks > 0 && this.ticks < Integer.MAX_VALUE) {
-                    BoundaryRenderManager.INSTANCE.render(box.inflatedBy(2), this.ticks);
+                    BoundaryRenderManager.INSTANCE.render(box, this.ticks);
                 } else {
-                    BoundaryRenderManager.INSTANCE.renderForever(box.inflatedBy(2));
+                    BoundaryRenderManager.INSTANCE.renderForever(box);
                 }
             });
         });

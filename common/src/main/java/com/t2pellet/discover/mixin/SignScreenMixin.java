@@ -1,6 +1,7 @@
 package com.t2pellet.discover.mixin;
 
 import com.t2pellet.discover.client.render.boundary.BoundaryRenderManager;
+import com.t2pellet.discover.compat.ModCompat;
 import com.t2pellet.discover.structure.PlayerStructure;
 import com.t2pellet.discover.structure.StructureBuilder;
 import com.t2pellet.discover.util.SignUtil;
@@ -38,7 +39,8 @@ public class SignScreenMixin extends Screen {
 
     @Inject(method = "init", at = @At("TAIL"))
     public void onInit(CallbackInfo ci) {
-        this.addRenderableWidget(Button.builder(DISCOVER$CREATE_COMPONENT, this::discover$_checkBoundary).bounds(this.width / 2 - 100, this.height / 4 + 120, 200, 20).build());
+        int heightOffset = ModCompat.isModLoaded(ModCompat.VIA_ROMANA) ? 96 : 120;
+        this.addRenderableWidget(Button.builder(DISCOVER$CREATE_COMPONENT, this::discover$_checkBoundary).bounds(this.width / 2 - 100, this.height / 4 + heightOffset, 200, 20).build());
     }
 
     @Unique
@@ -48,7 +50,7 @@ public class SignScreenMixin extends Screen {
         Player player = Minecraft.getInstance().player;
         Optional<PlayerStructure> structure = new StructureBuilder(name, player, pos).search();
         structure.ifPresentOrElse((struct) -> {
-            BoundaryRenderManager.INSTANCE.render(struct.box.inflatedBy(2), 120);
+            BoundaryRenderManager.INSTANCE.render(struct.box, 120);
         }, () -> {
             player.displayClientMessage(Component.translatable("discover.boundary.error"), true);
         });

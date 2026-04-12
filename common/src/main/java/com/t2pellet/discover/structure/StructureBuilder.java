@@ -36,9 +36,9 @@ public class StructureBuilder {
         this.level = player.level();
         // Query for air block in the vicinity of startPos
         BlockPos airPos = null;
-        for (int offset = -1; offset <= SCAN_SIZE; ++offset) {
+        for (int offset = 1; offset <= SCAN_SIZE; ++offset) {
             BlockPos pos = startPos.relative(facing, offset);
-            if (this.isAir(pos) && this.isInsideSomething(pos)) {
+            if (this.isAir(pos) && this.isSurrounded(pos)) {
                 airPos = pos;
                 break;
             }
@@ -113,7 +113,7 @@ public class StructureBuilder {
         return BoundingBox.encapsulatingPositions(visited).map((box) -> {
             BlockPos min = new BlockPos(box.minX(), box.minY(), box.minZ()).offset(-2, -1, -2);
             BlockPos max = new BlockPos(box.maxX(), box.maxY(), box.maxZ()).offset(3, 2, 3);
-            BoundingBox inflated = new BoundingBox(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ());
+            BoundingBox inflated = new BoundingBox(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ()).inflatedBy(1);
             return new PlayerStructure(name, player.getUUID(), inflated);
         });
     }

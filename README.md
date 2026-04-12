@@ -1,7 +1,6 @@
 // TODO
 
 * Async or something for structure performance
-* Waystones Support
 * Via Romana support
 * Logbook (shapeless compass + map + leather)
   * Shift save data to serverside player save data

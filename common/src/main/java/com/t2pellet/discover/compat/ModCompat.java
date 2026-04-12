@@ -5,6 +5,7 @@ import dev.architectury.platform.Platform;
 public class ModCompat {
 
     public static final String WAYSTONES = "waystones";
+    public static final String VIA_ROMANA = "via_romana";
 
     private ModCompat() {
     }
