@@ -2,6 +2,8 @@ package com.t2pellet.discover;
 
 import com.t2pellet.discover.command.BiomeCommand;
 import com.t2pellet.discover.command.StructureCommand;
+import com.t2pellet.discover.compat.ModCompat;
+import com.t2pellet.discover.compat.WaystonesCompat;
 import com.t2pellet.discover.event.OrdainHouseEvent;
 import com.t2pellet.discover.event.RemoveHouseEvent;
 import dev.architectury.event.events.common.BlockEvent;
@@ -27,5 +29,8 @@ public final class DiscoverTitles {
             BiomeCommand.INSTANCE.register(dispatcher);
             StructureCommand.INSTANCE.register(dispatcher);
         });
+        if (ModCompat.isModLoaded(ModCompat.WAYSTONES)) {
+            WaystonesCompat.handleWaystoneCreation();
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.t2pellet.discover.mixin;
 
-import com.t2pellet.discover.DiscoverTitles;
+import com.t2pellet.discover.compat.ModCompat;
+import com.t2pellet.discover.compat.WaystonesCompat;
 import com.t2pellet.discover.config.DiscoverConfig;
 import com.t2pellet.discover.network.TitleSyncMessage;
 import com.t2pellet.discover.structure.PlayerStructure;
@@ -51,6 +52,9 @@ public class ServerPlayerMixin {
 
         discover$_handleStructure(sectionPos);
         discover$_handlePlayerStructure(sectionPos);
+        if (ModCompat.isModLoaded(ModCompat.WAYSTONES)) {
+            discover$_handleWaystone();
+        }
     }
 
     @Unique
@@ -60,7 +64,7 @@ public class ServerPlayerMixin {
 
         Set<PlayerStructure> structuresInSection = structures.containing(sectionPos.center());
         structuresInSection.stream().findAny().ifPresent(structure -> {
-            ServerPlayer player = DiscoverTitles.currentServer.getPlayerList().getPlayer(structure.player);
+            ServerPlayer player = structure.getServerPlayer();
             String playerName = player != null ? player.getName().getString() : Language.getInstance().getOrDefault("discover.unknown_player");
             new TitleSyncMessage(new LocationRawTitle(
                     LocationTitle.Type.PLAYER,
@@ -99,5 +103,20 @@ public class ServerPlayerMixin {
                 location
         )).sendTo(self);
         discover$lastStructure = currentStructure.getStructure();
+    }
+
+    @Unique
+    private void discover$_handleWaystone() {
+        ServerPlayer self = (ServerPlayer) (Object) this;
+        Optional<PlayerStructure> waystone = WaystonesCompat.getForWaystone(self);
+        if (waystone.isPresent()) {
+            ServerPlayer player = waystone.get().getServerPlayer();
+            String playerName = player != null ? player.getName().getString() : Language.getInstance().getOrDefault("discover.unknown_player");
+            new TitleSyncMessage(new LocationRawTitle(
+                    LocationTitle.Type.PLAYER,
+                    waystone.get().name,
+                    playerName
+            )).sendTo(self);
+        }
     }
 }

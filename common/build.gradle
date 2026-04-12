@@ -10,5 +10,7 @@ dependencies {
 
     modImplementation "dev.architectury:architectury:$rootProject.architectury_api_version"
 
-    compileOnly group: 'me.fzzyhmstrs', name: 'fzzy_config', version: "${fuzzy_config_forge_version}"
+    modCompileOnly group: 'me.fzzyhmstrs', name: 'fzzy_config', version: "${fuzzy_config_forge_version}"
+    modCompileOnly "maven.modrinth:balm:${balm_version}"
+    modCompileOnly "maven.modrinth:waystones:${waystones_forge_version}"
 }

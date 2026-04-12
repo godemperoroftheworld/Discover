@@ -36,6 +36,8 @@ dependencies {
 
     modImplementation "me.fzzyhmstrs:fzzy_config:${project.fzzy_config_version}"
     modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+    modCompileOnly "maven.modrinth:balm:${balm_version}"
+    modCompileOnly "maven.modrinth:waystones:${waystones_version}"
 }
 
 processResources {
