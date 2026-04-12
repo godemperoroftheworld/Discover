@@ -25,6 +25,8 @@ public class DiscoverConfig extends Config {
     public ValidatedInt cooldownTicks = new ValidatedInt(120);
     public ValidatedInt cooldownCount = new ValidatedInt(5);
 
+    public ValidatedInt renderTime = new ValidatedInt(120);
+
     public ValidatedIdentifier houseOrdainingItem = ConfigHelpers.forAnyItemOrTag(new ResourceLocation("minecraft", "honeycomb"));
     public ValidatedIdentifier houseRemovingItem = ConfigHelpers.forAnyItemOrTag(new ResourceLocation("minecraft", "axes"));
 

@@ -8,12 +8,11 @@ import com.t2pellet.discover.structure.PlayerStructures;
 import com.t2pellet.discover.title.LocationGameTitle;
 import com.t2pellet.discover.title.LocationRawTitle;
 import com.t2pellet.discover.title.LocationTitle;
-import net.minecraft.core.BlockPos;
+import com.t2pellet.discover.util.StructureUtil;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
@@ -23,7 +22,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -77,7 +75,7 @@ public class ServerPlayerMixin {
         ServerPlayer self = (ServerPlayer)(Object)this;
 
         // Get the current structure, early return if none
-        Optional<StructureStart> found = mixin$_findStructure(sectionPos);
+        Optional<StructureStart> found = StructureUtil.findStructure(self.serverLevel(), sectionPos);
         if (found.isEmpty()) {
             discover$lastStructure = null;
             return;
@@ -101,18 +99,5 @@ public class ServerPlayerMixin {
                 location
         )).sendTo(self);
         discover$lastStructure = currentStructure.getStructure();
-    }
-
-    @Unique
-    private Optional<StructureStart> mixin$_findStructure(SectionPos sectionPos) {
-        ServerPlayer player = (ServerPlayer)(Object)this;
-        BlockPos pos = sectionPos.center();
-        ServerLevel level = player.serverLevel();
-
-        List<StructureStart> starts = level.structureManager().startsForStructure(sectionPos.chunk(), s -> true);
-        return starts.stream().filter(start -> {
-            if (!start.isValid()) return false;
-            return start.getBoundingBox().isInside(pos);
-        }).findFirst();
     }
 }

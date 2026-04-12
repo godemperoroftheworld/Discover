@@ -2,7 +2,7 @@ package com.t2pellet.discover.event;
 
 import com.t2pellet.discover.config.ConfigHelpers;
 import com.t2pellet.discover.config.DiscoverConfig;
-import com.t2pellet.discover.network.BoundaryCreatedMessage;
+import com.t2pellet.discover.network.RenderBoundariesMessage;
 import com.t2pellet.discover.structure.PlayerStructure;
 import com.t2pellet.discover.structure.PlayerStructures;
 import com.t2pellet.discover.structure.StructureBuilder;
@@ -26,13 +26,13 @@ import java.util.Optional;
 public class OrdainHouseEvent implements InteractionEvent.RightClickBlock {
     @Override
     public EventResult click(Player player, InteractionHand hand, BlockPos pos, Direction face) {
-        if (player.level().isClientSide()) {
-            return EventResult.pass();
+        if (!player.level().isClientSide()) {
+            this.ordainHouse(player, hand, pos);
         }
-        return this.ordainHouse(player, hand, pos);
+        return EventResult.pass();
     }
 
-    private EventResult ordainHouse(Player player, InteractionHand hand, BlockPos pos) {
+    private void ordainHouse(Player player, InteractionHand hand, BlockPos pos) {
         ServerLevel level = (ServerLevel) player.level();
         ItemStack stack = player.getItemInHand(hand);
         BlockEntity entity = level.getBlockEntity(pos);
@@ -40,24 +40,19 @@ public class OrdainHouseEvent implements InteractionEvent.RightClickBlock {
             Optional<String> name = SignUtil.getFirstText(sign);
             if (name.isEmpty()) {
                 player.displayClientMessage(Component.translatable("discover.boundary.name_required"), true);
-                return EventResult.pass();
+                return;
             }
             StructureBuilder finder = new StructureBuilder(name.get(), player, pos);
             Optional<PlayerStructure> structure = finder.search();
             if (structure.isPresent()) {
                 PlayerStructures.get(level).add(structure.get());
                 ((SignWithBoundary) sign).discover$_setUUID(structure.get().uuid);
-                new BoundaryCreatedMessage(structure.get().box).sendTo((ServerPlayer) player);
+                new RenderBoundariesMessage(structure.get().box).sendTo((ServerPlayer) player);
                 player.displayClientMessage(Component.translatable("discover.boundary.created"), true);
-                stack.shrink(1);
-                sign.setWaxed(true);
-                return EventResult.pass();
             } else {
                 player.displayClientMessage(Component.translatable("discover.boundary.error"), true);
-                return EventResult.pass();
             }
         }
-        return EventResult.pass();
     }
 
     private boolean isOrdainingItem(ItemStack item) {

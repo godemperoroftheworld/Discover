@@ -48,7 +48,7 @@ public class SignScreenMixin extends Screen {
         Player player = Minecraft.getInstance().player;
         Optional<PlayerStructure> structure = new StructureBuilder(name, player, pos).search();
         structure.ifPresentOrElse((struct) -> {
-            BoundaryRenderManager.INSTANCE.render(struct.box.inflatedBy(2));
+            BoundaryRenderManager.INSTANCE.render(struct.box.inflatedBy(2), 120);
         }, () -> {
             player.displayClientMessage(Component.translatable("discover.boundary.error"), true);
         });

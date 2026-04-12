@@ -7,6 +7,7 @@ import net.minecraft.Util;
 import net.minecraft.locale.Language;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 import static com.t2pellet.discover.DiscoverTitles.TRAVELER_TITLE_COMPAT_ID;
 
@@ -55,7 +56,7 @@ public class LocationGameTitle implements LocationTitle {
     }
 
     @Override
-    public Integer colour() {
+    public @Nullable Integer colour() {
         String key = this.type.name + "." + this.location.getNamespace() + "." + this.location.getPath() + ".color";
         if (Language.getInstance().has(key)) {
             String colorString = Language.getInstance().getOrDefault(key);

@@ -6,6 +6,7 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ public class PlayerStructure {
         SectionPos max = SectionPos.of(box.maxX(), box.maxY(), box.maxZ());
     }
 
-    public ServerPlayer getServerPlayer() {
+    public @Nullable ServerPlayer getServerPlayer() {
         return DiscoverTitles.currentServer.getPlayerList().getPlayer(this.player);
     }
 

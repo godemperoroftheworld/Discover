@@ -49,7 +49,7 @@ public class CreateBoundaryMessage extends BaseC2SMessage {
             Optional<PlayerStructure> boundary = finder.search();
             boundary.ifPresentOrElse(structure -> {
                 PlayerStructures.get(player.serverLevel()).add(structure);
-                new BoundaryCreatedMessage(structure.box).sendTo(player);
+                new RenderBoundariesMessage(structure.box).sendTo(player);
                 new TitleSyncMessage(new LocationRawTitle(LocationTitle.Type.PLAYER, this.name, player.getName().getString())).sendTo(player);
                 player.displayClientMessage(Component.translatable("discover.boundary.created"), true);
             }, () -> {
